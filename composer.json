@@ -1,0 +1,26 @@
+{
+    "name": "kirillantv/yii2-swap",
+    "type": "yii2-extension",
+    "description": "Yii2 extension allows you to transform your site into Swap Platform",
+    "keywords": ["yii2", "kirillantv", "swap", "swapplatform", "gimme"],
+    "license": "MIT",
+    "support": {
+        "source": "https://github.com/kirillantv/yii2-swap"
+    },
+    "authors": [
+        {
+            "name": "Kirill Antonov",
+            "email": "interpark46@gmail.com"
+        }
+    ],
+	"minimum-stability": "dev",
+    "require": {
+        "yiisoft/yii2": "~2.0.0"
+    },
+
+    "autoload": {
+        "psr-4": {
+            "kirillantv\\swap\\": ""
+        }
+    }
+}
