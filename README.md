@@ -51,22 +51,27 @@ $ php yii migrate/up --migrationPath=@vendor/kirillantv/yii2-swap/migrations
 
 ##### 2. Categories
 `swap/management/categories` list of all categories
+
 `swap/management/categories/create` create category
 
 ##### 3. Bets
 `swap/management/bets` list of all bets
+
 `swap/management/bets/create` create bet in module management page
 
 ##### 4. Orders
 `swap/management/orders` list of all orders
+
 `swap/management/orders/create` create order manually
 
 ##### 5. Attributes
 `swap/management/attributes` list of all attributes
+
 `swap/management/attributes/create` create attributes for your items
 
 ##### 6. Attribute Values
 `swap/management/values` junction table for items and attributes
+
 `swap/management/values/create` create manually junction between item and attribute. Just for specific solutions
 
 ##### 7. Visual Configuration
@@ -76,6 +81,7 @@ $ php yii migrate/up --migrationPath=@vendor/kirillantv/yii2-swap/migrations
 
 ##### 1.Items
 `swap/items` input all active items
+
 `swap/items/create` create item with attributes, categories and bets
 
 ##### 2. Orders
