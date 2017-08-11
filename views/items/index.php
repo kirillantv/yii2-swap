@@ -14,6 +14,7 @@ use yii\bootstrap\ActiveForm;
 				<div class="row">
 					<div class="col-xs-12">
 						<?= $this->render('_category', ['categories' => $categories]); ?>
+						
 					</div>
 				</div>
 			</div>

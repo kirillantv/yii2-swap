@@ -57,7 +57,7 @@ class Item extends \yii\db\ActiveRecord
             [['betsString'], 'safe'],
             [['created_at', 'update_at'], 'safe'],
             [['title'], 'string', 'max' => 255],
-            [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => Yii::$app->user->className(), 'targetAttribute' => ['author_id' => 'id']],
+            [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => Yii::$app->user->identityClass, 'targetAttribute' => ['author_id' => 'id']],
         ];
     }
     
@@ -87,7 +87,7 @@ class Item extends \yii\db\ActiveRecord
      */
     public function getAuthor()
     {
-        return $this->hasOne(Yii::$app->user->className(), ['id' => 'author_id']);
+        return $this->hasOne(Yii::$app->user->identityClass, ['id' => 'author_id']);
     }
 
     /**

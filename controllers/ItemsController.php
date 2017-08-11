@@ -27,11 +27,17 @@ class ItemsController extends Controller
             ->all();
             
        	$categories = Category::find()->all();
-
-        return $this->render('index', [
+		
+		if ($items) {
+			return $this->render('index', [
             'items' => $items,
             'categories' => $categories
         ]);
+		}
+		else {
+			return $this->render('error');
+		}
+        
 	}
 	
     public function actionCategory($id)

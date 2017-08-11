@@ -40,7 +40,7 @@ class Order extends \yii\db\ActiveRecord
         return [
             [['item_id', 'catcher_id'], 'required'],
             [['item_id', 'catcher_id', 'status'], 'integer'],
-            [['catcher_id'], 'exist', 'skipOnError' => true, 'targetClass' => Yii::$app->user->className(), 'targetAttribute' => ['catcher_id' => 'id']],
+            [['catcher_id'], 'exist', 'skipOnError' => true, 'targetClass' => Yii::$app->user->identityClass, 'targetAttribute' => ['catcher_id' => 'id']],
             [['item_id'], 'exist', 'skipOnError' => true, 'targetClass' => Item::className(), 'targetAttribute' => ['item_id' => 'id']],
             [['betsArray'], 'safe']
         ];
@@ -64,7 +64,7 @@ class Order extends \yii\db\ActiveRecord
      */
     public function getCatcher()
     {
-        return $this->hasOne(Yii::$app->user->className(), ['id' => 'catcher_id']);
+        return $this->hasOne(Yii::$app->user->identityClass, ['id' => 'catcher_id']);
     }
 
     /**

@@ -9,6 +9,7 @@
 namespace kirillantv\swap\helpers;
 
 use kirillantv\swap\models\Attribute;
+use kirillantv\swap\models\BasicConfig;
 /**
  * Title helper
  * 
@@ -35,9 +36,9 @@ class Title {
 		
 		foreach ($titleAttributes as $key => $attribute)
 		{
-			if (stristr($customTitle, $attribute))
+			if (stristr($customTitle, '%'.$attribute.'%'))
 			{
-				$customTitle = str_replace($attribute, $values[$key]->value_string, $customTitle);
+				$customTitle = str_replace('%'.$attribute.'%', $values[$key]->value_string, $customTitle);
 			}
 			else {
 				continue;
@@ -61,5 +62,9 @@ class Title {
 	public static function getItemAttributesArray($params = array())
 	{
 		return Attribute::find()->select(['slug', 'id'])->indexBy('id')->column();
+	}
+	public static function getTitleFormula()
+	{
+		return BasicConfig::findOne(['name' => 'customTitleFormula'])->value;
 	}
 }

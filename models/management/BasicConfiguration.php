@@ -61,5 +61,10 @@ class BasicConfiguration extends Model {
     {
     	$this->_customTitleFormula = $value;
     }
+    
+    public function getAvailibleAttributes()
+    {
+    	return BasicConfig::getItemAttributesArray();
+    }
 }
 ?>

@@ -45,6 +45,11 @@ $ php yii migrate/up --migrationPath=@vendor/kirillantv/yii2-swap/migrations
 
 **NOTE: It is not recommended to use actions below in frontend. Even swap/management/items/create action.**
 **All index pages designed as GridView by default**
+
+##### 0. Simple start
+You can get access to swap console easily with action below:
+
+`swap/management`
 ##### 1. Items
 `swap/management/items` list of all items
 `swap/management/items/create` create item in module management page

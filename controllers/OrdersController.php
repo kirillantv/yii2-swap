@@ -11,6 +11,7 @@ namespace kirillantv\swap\controllers;
 use Yii;
 use yii\web\Controller;
 use kirillantv\swap\models\Item;
+use kirillantv\swap\models\Order;
 
 class OrdersController extends Controller
 {
