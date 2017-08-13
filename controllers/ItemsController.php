@@ -73,6 +73,10 @@ class ItemsController extends Controller
 	            	$model->title = Title::generateCustomTitle($model);
 	            	$model->save();
 	            }
+				Yii::$app->session->setFlash(
+	                'success',
+	                'Item was successfully created'
+        		);
 	            return $this->redirect(['swap/item/view', 'id' => $model->id]);
 	        } else {
 	            return $this->render('create', [

@@ -26,25 +26,44 @@ class OrdersController extends Controller
 			{
 	            $item_id = Yii::$app->request->get('id');
 			}
+			
 			$item = Item::findOne($item_id);
-			if ($item->active != 1) {
-				return $this->redirect(['swap/items/index']); // To do note that says about swapping item
-			}
-			else {
-				$order->catcher_id = Yii::$app->user->identity->id;
-				$order->item_id = $item->id;
-				$post = Yii::$app->request->post();
-				
-				if ($order->load(Yii::$app->request->post()) && $order->save()) {
-		                    return $this->redirect(['swap/items/index']);
-				} 
+			if ($item->author_id === Yii::$app->user->identity->id)
+			{
+				Yii::$app->session->setFlash(
+		                'danger',
+		                'You can\'t swap your items'
+	            );
+				return $this->redirect(['items/index']);
+			} else {
+				if ($item->active != 1) {
+						Yii::$app->session->setFlash(
+			                'warning',
+			                'This item has been already swapped'
+	            		);
+					return $this->redirect(['items/index']); 
+				}
 				else {
-		                    return $this->render('create', [
-		                        'order' => $order,
-		                        'item' => $item
-		                    ]);
-				} 
+					$order->catcher_id = Yii::$app->user->identity->id;
+					$order->item_id = $item->id;
+					$post = Yii::$app->request->post();
+					
+					if ($order->load(Yii::$app->request->post()) && $order->save()) {
+								Yii::$app->session->setFlash(
+					                'success',
+					                'Item was successfully swapped'
+			            		);
+			                    return $this->redirect(['swap/items/index']);
+					} 
+					else {
+			                    return $this->render('create', [
+			                        'order' => $order,
+			                        'item' => $item
+			                    ]);
+					} 
+				}
 			}
+			
         }
 		
 		
