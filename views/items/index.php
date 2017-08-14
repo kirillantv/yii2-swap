@@ -15,18 +15,18 @@ use yii\bootstrap\ActiveForm;
 			<div class="row">
 				<div class="col-xs-12">
 					<?= $this->render('_category', ['categories' => $categories]); ?>
-					
 				</div>
 			</div>
 		</div>
 		<div class="col-md-10">
 			<div class="row">
-				<div class="col-xs-12">
+				<div class="col-xs-12" style="margin-bottom: 10px">
 					<div class="row">
-						<div class="col-sm-2 col-sm-offset-10">
-							<div class="pull-right" style="margin-bottom:12px;">
+						<div class="col-sm-10 col-xs-12">
+							<?= $this->render('/_filter', ['filter' => $filter, 'id' => $id]); ?>
+						</div>
+						<div class="col-sm-2 col-xs-12">
 							<?= Html::a('Add Item', ['items/create'], ['class' => 'btn btn-primary']) ?>
-							</div>
 						</div>
 					</div>
 				</div>

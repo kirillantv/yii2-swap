@@ -15,4 +15,9 @@ class BasicConfig extends \yii\db\ActiveRecord {
 	{
 		return self::findOne(['name' => 'isCustomTitle'])->value == 1 ? true : false;
 	}
+	
+	public static function getItemAttributesArray($params = array())
+	{
+		return Attribute::find()->select(['slug', 'id'])->indexBy('id')->column();
+	}
 }

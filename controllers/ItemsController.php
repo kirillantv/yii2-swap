@@ -15,14 +15,19 @@ use kirillantv\swap\models\Item;
 use kirillantv\swap\models\Category;
 use kirillantv\swap\models\Attribute;
 use kirillantv\swap\models\Value;
+use kirillantv\swap\models\search\ItemSearch;
 use kirillantv\swap\helpers\Title;
 
 class ItemsController extends Controller
 {
 	public function actionIndex() 
 	{
-		$model = Item::find()->with(['categories', 'itemAttributes', 'values', 'bets'])->active();
-
+		$model = Item::find()->joinWith(['categories', 'values', 'bets'])->active();
+		$filter = new ItemSearch();
+		if ($filter->loadSearchParams(Yii::$app->request->get()))
+		{
+			$model = $filter->search($model);	
+		}
         $items = $model->orderBy(['created_at' => SORT_DESC])
             ->all();
             
@@ -31,7 +36,8 @@ class ItemsController extends Controller
 		if ($items) {
 			return $this->render('index', [
             'items' => $items,
-            'categories' => $categories
+            'categories' => $categories,
+            'filter' => $filter
         ]);
 		}
 		else {
@@ -45,11 +51,18 @@ class ItemsController extends Controller
     	$category = $this->findCategoryModel($id);
     	$model = Item::find()->joinWith(['categories', 'values', 'bets'])->active()
     	->forCategory($category->id);
+    	$filter = new ItemSearch();
+		if ($filter->loadSearchParams(Yii::$app->request->get()))
+		{
+			$model = $filter->search($model);	
+		}
     	$items = $model->orderBy(['created_at' => SORT_DESC])->all();
     	$categories = Category::find()->all();
     	return $this->render('index', [
     		'items' => $items,
             'categories' => $categories,
+            'id' => $category->id,
+            'filter' => $filter
     		]);
     }
     
