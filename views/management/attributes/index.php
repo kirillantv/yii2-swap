@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
 			            'name',
 			            'type',
 			            'required',
-			
+						'searchable',
 			            ['class' => 'yii\grid\ActionColumn'],
 			        ],
 			    ]); ?>

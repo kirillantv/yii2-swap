@@ -9,10 +9,20 @@ namespace kirillantv\swap\models\query;
  */
 class OrderQuery extends \yii\db\ActiveQuery
 {
-    /*public function active()
+    public function active()
     {
-        return $this->andWhere('[[status]]=1');
-    }*/
+        return $this->andWhere(['status' => 1]);
+    }
+    
+    public function archive()
+    {
+        return $this->andWhere(['status' => 0]);
+    }
+    
+    public function forUser($id)
+    {
+    	return $this->andWhere(['catcher_id' => $id])->orWhere(['item.author_id' => $id]);
+    }
 
     /**
      * @inheritdoc

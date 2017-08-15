@@ -5,6 +5,7 @@ use yii\helpers\ArrayHelper;
 use yii\grid\GridView;
 use kirillantv\swap\models\Item;
 use kirillantv\swap\models\Category;
+use yii\widgets\Menu;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\search\ItemSearch */

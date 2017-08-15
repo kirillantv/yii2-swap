@@ -148,7 +148,7 @@ class Item extends \yii\db\ActiveRecord
 
     /**
      * @inheritdoc
-     * @return \common\models\query\ItemQuery the active query used by this AR class.
+     * @return \kirillantv\yii2-swap\models\query\ItemQuery the active query used by this AR class.
      */
     public static function find()
     {

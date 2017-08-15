@@ -91,3 +91,23 @@ You can get access to swap console easily with action below:
 
 ##### 2. Orders
 `swap/orders/create` create order when user clicks swap button. Available to choose bet
+
+#### User actions
+
+Yii2-Swap provides user's items and orders output. You can add corresponding actions in profile menu or override views
+
+##### 1. Items
+
+`swap/user/items` main action for user's items
+
+`swap/user/items/active` user's active items
+
+`swap/user/items/archive` user's archive items
+
+##### 2. Orders
+
+`swap/user/orders` main action for user's orders
+
+`swap/user/orders/active` user's active orders
+
+`swap/user/orders/archive` user's archive orders

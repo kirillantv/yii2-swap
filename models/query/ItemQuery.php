@@ -5,15 +5,25 @@ namespace kirillantv\swap\models\query;
 use kirillantv\swap\models\Category;
 
 /**
- * This is the ActiveQuery class for [[\common\models\Item]].
+ * This is the ActiveQuery class for [[\kirillantv\swap\models\Item]].
  *
- * @see \common\models\Item
+ * @see \kirillantv\swap\models\Item
  */
 class ItemQuery extends \yii\db\ActiveQuery
 {
     public function active()
     {
         return $this->andWhere(['active' => 1]);
+    }
+    
+    public function archive()
+    {
+        return $this->andWhere(['active' => 0]);
+    }
+    
+    public function forUser($id)
+    {
+    	return $this->andWhere(['author_id' => $id]);
     }
     
     public function forCategory($id)

@@ -6,21 +6,10 @@ use yii\bootstrap\ActiveForm;
 use kirillantv\swap\models\Attribute;
 ?>
 
-<?php/* $form = ActiveForm::begin([
-	'method' => 'get',
-	'options' => 
-		[]
-		]); ?>
-<?= $form->field($filter, 'search')->hiddenInput(['value' => 'true']); ?>
-<?= $form->field($filter, 'for')->dropDownList(Attribute::find()
-    														->select(['name', 'id'])
-    														->indexBy('id')->column())
-    														->label('Choose attribute'); ?>
-<?= $form->field($filter, 's')->textInput(); ?>
-<?php ActiveForm::end();*/?>
+
 <?= Html::beginForm(['', 'search' => 'true', 'id' => $id], 'get', ['class' => 'form-inline']); ?>
 <div class="form-group">
-<?= Html::dropDownList('for', $filter->for, Attribute::find()
+<?= Html::dropDownList('for', $filter->for, Attribute::find()->searchable()
 											->select(['name', 'id'])
 											->indexBy('id')->column(),  ['class' => 'form-control btn-primary']) ?>	
 </div>

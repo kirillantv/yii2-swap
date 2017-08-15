@@ -19,6 +19,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'type')->dropDownList(['string' => 'String', 'integer' => 'Integer']) ?>
 
     <?= $form->field($model, 'required')->dropDownList([0 => 'No', 1 => 'Yes']) ?>
+    <?= $form->field($model, 'searchable')->checkbox() ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

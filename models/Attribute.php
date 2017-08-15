@@ -33,7 +33,7 @@ class Attribute extends \yii\db\ActiveRecord
     {
         return [
             [['slug', 'name', 'type'], 'required'],
-            [['required'], 'integer'],
+            [['required', 'searchable'], 'integer'],
             [['slug', 'name', 'type'], 'string', 'max' => 255],
         ];
     }
@@ -49,7 +49,12 @@ class Attribute extends \yii\db\ActiveRecord
             'name' => 'Name',
             'type' => 'Type',
             'required' => 'Required',
+            'searchable' => 'Searchable'
         ];
+    }
+    public static function find()
+    {
+        return new \kirillantv\swap\models\query\AttributeQuery(get_called_class());
     }
 
     /**

@@ -41,6 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		            'name',
 		            'type',
 		            'required',
+		            'searchable',
 		        ],
 		    ]) ?>
 		
