@@ -42,7 +42,7 @@ class Order extends \yii\db\ActiveRecord
             [['item_id', 'catcher_id', 'status'], 'integer'],
             [['catcher_id'], 'exist', 'skipOnError' => true, 'targetClass' => Yii::$app->user->identityClass, 'targetAttribute' => ['catcher_id' => 'id']],
             [['item_id'], 'exist', 'skipOnError' => true, 'targetClass' => Item::className(), 'targetAttribute' => ['item_id' => 'id']],
-            [['betsArray'], 'safe']
+            [['betsArray'], 'required']
         ];
     }
 

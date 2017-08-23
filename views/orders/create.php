@@ -1,5 +1,5 @@
 <?php
-use yii\helpers\Html;
+use yii\bootstrap\Html;
 use yii\helpers\ArrayHelper;
 use yii\bootstrap\ActiveForm;
 use kirillantv\swap\models\Item;
@@ -11,35 +11,63 @@ $this->title = "To swap";
 	
 </div>
 <div class="container">
-	<div class="col-md-5">
-		<h2 style="background-color:rgba(1, 32, 136, 0.25); padding: 1.3333%"><?= Html::encode('mainUser'/*$item->author->username*/); ?></h2>
-		<h3><?php echo $item->title ?></h3>
-		<table class="table table-condensed">
-			<tbody>
-				<?php foreach ($item->values as $attribute) {?>
-				<tr>
-					<td><?= Html::encode($attribute->itemAttribute->name); ?></td>
-					<td><?= Html::encode($attribute->value_string) ?> </td>
-				</tr>
-				<?php } ?>
-			</tbody>
-		</table>
-		<?php foreach ($item->bets as $bet) {?>
-			<span class="btn btn-success"><?= Html::encode($bet->name) ?></span>
-		<?php } ?>
-	</div>
-	<div class="col-md-2">
-		---------->
-	</div>
-	<div class="col-md-5">
-		<h2 style="background-color:rgba(11, 136, 1, 0.25); padding: 1.3333%"><?= Html::encode('userTest'); ?></h2>
-		<?php $form = ActiveForm::begin(); ?>
-		<?= Html::activeHiddenInput($order, 'item_id') /*$form->field($order, 'item_id')->hiddenInput()->label('');*/ ?>
-		<?= Html::activeHiddenInput($order, 'catcher_id') ?>
-		<?= $form->field($order, 'betsArray')->checkboxList(ArrayHelper::map($item->bets, 'id', 'name'))->label('Choose bets'); ?>
-		 <div class="form-group">
-        	<?= Html::submitButton('To swap', ['class' => 'btn btn-success']) ?>
-    	</div>
-		<?php ActiveForm::end(); ?>
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			 <div class="panel-heading">
+			 	<h2><?= $item->title ?></h2>
+			 </div>
+			 <div class="panel-body">
+			 	<div class="col-md-6 col-xs-12">
+			 		<div style="background-color: rgb(245, 245, 245); height:350px">
+			 			
+			 		</div>
+			 	</div>
+			 	<div class="col-md-6 col-xs-12">
+			 		<div class="col-xs-12">
+			 			<span class="pull-right">
+			 				<h4>
+			 					from: @<?= $item->author->username ?>
+			 				</h4>
+			 			</span>
+			 		</div>
+			 		<table class="table table-condensed">
+						<tbody>
+							<?php foreach ($item->values as $attribute) {?>
+							<tr>
+								<td><?= Html::encode($attribute->itemAttribute->name); ?></td>
+								<td><?= Html::encode($attribute->value_string) ?> </td>
+							</tr>
+							<?php } ?>
+						</tbody>
+					</table>
+					<div class="col-xs-12">
+						<strong>
+							@<?= $item->author->username ?> wants:
+						</strong>
+						<?php foreach ($item->bets as $bet) {?>
+							<span class="btn btn-sm btn-success"><?= Html::encode($bet->name) ?></span>
+						<?php } ?>
+					</div>
+					<div class="col-xs-12">
+						<div class="col-xs-12">
+							<h4>
+								<?= Html::encode('Choose bets:');?>
+							</h4>
+							<?php $form = ActiveForm::begin(); ?>
+							<?= Html::activeCheckboxList($order, 'betsArray', ArrayHelper::map($item->bets, 'id', 'name'), ['class' => 'checkbox', 'separator' => '<br>','itemOptions' => ['label' => 'checkbox']]) ?>
+							 <div class="form-group">
+							 	<div class="col-sm-12">
+							 		<?= Html::submitButton('To swap', ['class' => 'btn btn-success btn-block']) ?>
+							 	</div>
+							 	<div class="col-sm-12">
+							 		<?= Html::a('Contact with @'.$item->author->username, ['message/create', 'item' => $item->id], ['class' => 'btn btn-link btn-block']);?>
+							 	</div>
+					    	</div>
+							<?php ActiveForm::end(); ?>
+						</div>
+					</div>
+			 	</div>
+			 </div>
+		</div>
 	</div>
 </div>
