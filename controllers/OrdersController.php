@@ -10,7 +10,7 @@ namespace kirillantv\swap\controllers;
 
 use Yii;
 use yii\web\Controller;
-use yii\filters\AccessControl;
+use kirillantv\swap\filters\AccessControl;
 use kirillantv\swap\models\Item;
 use kirillantv\swap\models\Order;
 use kirillantv\swap\modules\message\models\Message;
@@ -33,37 +33,6 @@ class OrdersController extends Controller
 			];
 	}
 	
-	public function beforeAction($action)
-	{
-		
-		if (!parent::beforeAction($action)) {
-		        return false;
-		}
-		
-		if ($action->id === 'create')
-		{
-			$item = Item::findOne(Yii::$app->request->get('id'));
-			if ($item->author_id === Yii::$app->user->identity->id)
-			{
-				Yii::$app->session->setFlash(
-	                'danger',
-	                'You can\'t swap your items'
-	            );
-				$this->redirect(['items/index']);
-				return false;
-			}
-			if ($item->active != 1) {
-				Yii::$app->session->setFlash(
-	                'warning',
-	                'This item has been already swapped'
-	    		);
-				$this->redirect(['items/index']); 
-				return false;
-			}
-		}
-		
-		return true; 
-	}
 	public function actionCreate($id)
 	{
         $order = new Order(['scenario' => Order::SCENARIO_CREATE]);
