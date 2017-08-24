@@ -3,6 +3,9 @@
 namespace kirillantv\swap\models;
 
 use Yii;
+use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "{{%item}}".
@@ -33,6 +36,23 @@ class Item extends \yii\db\ActiveRecord
     {
         return '{{%item}}';
     }
+    
+    public function behaviors()
+    {
+    	return [
+    		[
+    			'class' => BlameableBehavior::classname(),
+    			'createdByAttribute' => 'catcher_id',
+    			'updatedByAttribute' => false
+    			],
+    		[
+    			'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'update_at',
+                'value' => new Expression('NOW()'),
+    			]
+    		];
+    }
 
     /**
      * @inheritdoc
@@ -43,21 +63,13 @@ class Item extends \yii\db\ActiveRecord
             [['title'], 'required', 'when' => function ($model) {
                     return $model->hasCustomTitle() === false;
             }],
-            [['created_at'], 'default', 'value' => function($value) {
-            	 return date(DATE_ATOM);
-            }],
-            [['author_id'], 'default', 'value' => function($value) {
-            	return Yii::$app->user->identity->id;
-            }],
             [['active'], 'default', 'value' => function ($value) {
             	return 1;
             }],
-            [['author_id', 'active'], 'integer'],
+            [['active'], 'integer'],
             [['categoriesArray'], 'safe'],
             [['betsString'], 'safe'],
-            [['created_at', 'update_at'], 'safe'],
-            [['title'], 'string', 'max' => 255],
-            [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => Yii::$app->user->identityClass, 'targetAttribute' => ['author_id' => 'id']],
+            [['title'], 'string', 'max' => 255]
         ];
     }
     

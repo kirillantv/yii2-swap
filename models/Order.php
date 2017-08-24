@@ -3,6 +3,7 @@
 namespace kirillantv\swap\models;
 
 use Yii;
+use yii\behaviors\BlameableBehavior;
 use kirillantv\swap\models\Item;
 /**
  * This is the model class for table "{{%order}}".
@@ -32,15 +33,25 @@ class Order extends \yii\db\ActiveRecord
         $scenarios[self::SCENARIO_CREATE] = $scenarios[self::SCENARIO_DEFAULT];
         return $scenarios;
     }
+    
+    public function behaviors()
+    {
+    	return [
+    		[
+    			'class' => BlameableBehavior::classname(),
+    			'createdByAttribute' => 'catcher_id',
+    			'updatedByAttribute' => false
+    			]
+    		];
+    }
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['item_id', 'catcher_id'], 'required'],
-            [['item_id', 'catcher_id', 'status'], 'integer'],
-            [['catcher_id'], 'exist', 'skipOnError' => true, 'targetClass' => Yii::$app->user->identityClass, 'targetAttribute' => ['catcher_id' => 'id']],
+            [['item_id'], 'required'],
+            [['item_id', 'status'], 'integer'],
             [['item_id'], 'exist', 'skipOnError' => true, 'targetClass' => Item::className(), 'targetAttribute' => ['item_id' => 'id']],
             [['betsArray'], 'required']
         ];
