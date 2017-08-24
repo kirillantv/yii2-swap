@@ -9,6 +9,11 @@
 namespace kirillantv\swap\modules\message\models;
 
 use Yii;
+use yii\db\ActiveRecord;
+use yii\db\Expression;
+use yii\behaviors\AttributeBehavior;
+use yii\behaviors\TimestampBehavior;
+use yii\behaviors\BlameableBehavior;
 use kirillantv\swap\models\Item;
 
 class Message extends \yii\db\ActiveRecord
@@ -21,16 +26,36 @@ class Message extends \yii\db\ActiveRecord
         return '{{%swap_message}}';
     }
     
+    public function behaviors()
+    {
+    	return [
+    		[
+    			'class' => BlameableBehavior::classname(),
+    			'createdByAttribute' => 'from',
+    			'updatedByAttribute' => false
+    			],
+    		[
+    			'class' => AttributeBehavior::classname(),
+    			'attributes' => [ActiveRecord::EVENT_BEFORE_INSERT => 'hash'],
+    			'value' => md5(uniqid(rand(), true)),
+    			],
+    		[
+    			'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => null,
+                'value' => new Expression('NOW()'),
+    			]
+    		];
+    }
      /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['hash', 'from', 'to', 'item_id', 'message'], 'required'],
-            [['from', 'to', 'item_id'], 'integer'],
+            [['to', 'item_id', 'message'], 'required'],
+            [['to', 'item_id'], 'integer'],
             [['message'], 'string'],
-            [['hash'], 'string', 'max' => 32],
             [['to'], 'exist', 'targetClass' => Yii::$app->user->identityClass, 'targetAttribute' => ['to' => 'id']]
         ];
     }
@@ -51,5 +76,11 @@ class Message extends \yii\db\ActiveRecord
     public function getItem()
     {
     	return $this->hasOne(Item::className(), ['id' => 'item_id']);
+    }
+    
+    public function compose(Item $item)
+    {
+		$this->to = $item->author->id;
+		$this->item_id = $item->id;
     }
 }

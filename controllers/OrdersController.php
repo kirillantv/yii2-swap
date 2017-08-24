@@ -57,21 +57,46 @@ class OrdersController extends Controller
 				$order->catcher_id = Yii::$app->user->identity->id;
 				$order->item_id = $item->id;
 				
-				//$message = new Message();
+				// Active Message and passive message
+				// We need to separate it to make different validations for message with order and simple message
+				$activeMessage = new Message();
+				$activeMessage->compose($item);
 				
-				if ($order->load(Yii::$app->request->post()) /*&& $message->load(Yii::$app->request->post()) && $message->save()*/ && $order->save()) {
-							Yii::$app->session->setFlash(
-				                'success',
-				                'Item was successfully swapped'
-		            		);
-		                    return $this->redirect(['items/index']);
-				} 
+				$passiveMessage = new Message();
+				$passiveMessage->compose($item);
+				
+				if ($order->load(Yii::$app->request->post()) && $activeMessage->load(Yii::$app->request->post())) 
+				{	
+					$isValid = $order->validate();
+					$isValid = $activeMessage->validate() && $isValid;
+					
+					if ($isValid)
+					{
+						$order->save();
+						$activeMessage->save();
+						Yii::$app->session->setFlash(
+		                'success',
+		                'Item was successfully swapped'
+	            		);
+	                    return $this->redirect(['items/index']);
+					}
+				}
+				if ($passiveMessage->load(Yii::$app->request->post()) && $passiveMessage->validate())
+				{
+					$passiveMessage->save();
+					Yii::$app->session->setFlash(
+			                'success',
+			                'Message to @'.$item->author->username.' was successfully sent'
+	            		);
+	            	return $this->redirect(['items/index']);
+				}
 				else {
-		                    return $this->render('create', [
-		                        'order' => $order,
-		                        'item' => $item,
-		                        //'message' => $message
-		                    ]);
+                    return $this->render('create', [
+                        'order' => $order,
+                        'item' => $item,
+                        'activeMessage' => $activeMessage,
+                        'passiveMessage' => $passiveMessage
+                    ]);
 				} 
 			}
 		}

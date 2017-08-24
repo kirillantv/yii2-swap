@@ -55,15 +55,21 @@ $this->title = "To swap";
 							</h4>
 							<?php $form = ActiveForm::begin(); ?>
 							<?= Html::activeCheckboxList($order, 'betsArray', ArrayHelper::map($item->bets, 'id', 'name'), ['class' => 'checkbox', 'separator' => '<br>','itemOptions' => ['label' => 'checkbox']]) ?>
-							 <div class="form-group">
+							<?= Html::label('Tell to @'.$item->author->username.'little more, for example, about location where you can swap and etc...', 'message-message'); ?>
+							<?= Html::activeTextarea($activeMessage, 'message', ['class' => 'form-control', 'placeholder' => 'Tell more...'])?>
+							<div class="form-group" style="margin-top:1%">
+								<div class="col-sm-12">
+									<?= Html::submitButton('To swap', ['class' => 'btn btn-success btn-block']) ?>
+								</div>
 							 	<div class="col-sm-12">
-							 		<?= Html::submitButton('To swap', ['class' => 'btn btn-success btn-block']) ?>
-							 	</div>
-							 	<div class="col-sm-12">
-							 		<?= Html::a('Contact with @'.$item->author->username, ['message/create', 'item' => $item->id], ['class' => 'btn btn-link btn-block']);?>
+							 		<button type="button" class="btn btn-link btn-block" data-toggle="modal" data-target="#message">
+									  <?= Html::encode('Contact with @'.$item->author->username) ?>
+									</button>
+							 		<?/*= Html::a('Contact with @'.$item->author->username, ['message/create', 'item' => $item->id], ['class' => 'btn btn-link btn-block']);*/?>
 							 	</div>
 					    	</div>
 							<?php ActiveForm::end(); ?>
+							<?= $this->render('message', ['passiveMessage' => $passiveMessage, 'author' => $item->author->username]); ?>
 						</div>
 					</div>
 			 	</div>
