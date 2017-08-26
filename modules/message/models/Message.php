@@ -18,9 +18,15 @@ use kirillantv\swap\models\Item;
 
 class Message extends \yii\db\ActiveRecord
 {
+	const SCENARIO_CONVERSATION = 'conversation';
 	/**
      * @inheritdoc
      */
+    public function scenarios() {
+        $scenarios = parent::scenarios();
+        $scenarios[self::SCENARIO_CONVERSATION] = $scenarios[self::SCENARIO_DEFAULT];
+        return $scenarios;
+    }
     public static function tableName()
     {
         return '{{%swap_message}}';
@@ -60,6 +66,10 @@ class Message extends \yii\db\ActiveRecord
         ];
     }
     
+    public static function find()
+    {
+        return new \kirillantv\swap\modules\message\models\query\MessageQuery(get_called_class());
+    }
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -78,9 +88,23 @@ class Message extends \yii\db\ActiveRecord
     	return $this->hasOne(Item::className(), ['id' => 'item_id']);
     }
     
-    public function compose(Item $item)
+    public function compose(Item $item = null, $to = null)
     {
-		$this->to = $item->author->id;
-		$this->item_id = $item->id;
+    	if ($this->scenario == self::SCENARIO_CONVERSATION)
+    	{
+    		$this->to = $to;
+			$this->item_id = $item->id;	
+    	}
+    	if ($this->scenario == self::SCENARIO_DEFAULT)
+    	{
+    		$this->to = $item->author->id;
+			$this->item_id = $item->id;	
+    	}
+		
+    }
+    
+    public function getInterlocutor()
+    {
+    	return $this->sender->id == Yii::$app->user->identity->id ? $this->recipient->username : $this->sender->username;
     }
 }

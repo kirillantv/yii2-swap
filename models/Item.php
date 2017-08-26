@@ -42,7 +42,7 @@ class Item extends \yii\db\ActiveRecord
     	return [
     		[
     			'class' => BlameableBehavior::classname(),
-    			'createdByAttribute' => 'catcher_id',
+    			'createdByAttribute' => 'author_id',
     			'updatedByAttribute' => false
     			],
     		[
