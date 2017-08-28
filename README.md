@@ -1,6 +1,6 @@
 # Getting started with Yii2-swap
 
-*** Pre-alpha version ***
+*** Alpha version v0.8.0 ***
 ### 1. Download
 Yii2-Swap extension can be installed using composer. Run the command bellow in console to download 
 and install Yii2-swap:
@@ -111,3 +111,16 @@ Yii2-Swap provides user's items and orders output. You can add corresponding act
 `swap/user/orders/active` user's active orders
 
 `swap/user/orders/archive` user's archive orders
+
+##### 3. Messages
+
+**Attention! Message module is not stable.**
+
+Extension supports specific message system by the default. After migration in your DB `swap_message` table will appear. We need for prefix not to conflict with your chat or mail system.
+We included message model in default orders controller and view. But you can access to inbox and conversation using controllers bellow:
+
+`swap/message/inbox` - list of all user's conversations grouped by `item_id`
+
+`swap/message/conversation` - need for GET parameters: `hash`, `item`, `from`, `to` of any message from current user's conversation. So foreign user can't enter to conversation.
+
+

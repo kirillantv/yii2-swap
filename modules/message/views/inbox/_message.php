@@ -5,8 +5,7 @@
  * 
  * For more information read README and LICENSE file 
  */
- 
-use yii\helpers\Url;
+
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 ?>

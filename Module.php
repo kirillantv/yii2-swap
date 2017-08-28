@@ -8,8 +8,12 @@
 
 namespace kirillantv\swap;
 
+use Yii;
+
 class Module extends \yii\base\Module
 {
+	public $enableWishmaker = true;
+	
 	public function init() 
 	{
 		parent::init();
@@ -17,8 +21,18 @@ class Module extends \yii\base\Module
 		$this->modules = [
 			'message' => [
 				'class' => 'kirillantv\swap\modules\message\Module'
+				],
+			'wishmaker' => [
+				'class' => 'kirillantv\wishmaker\Module'
 				]
 			];
+		/*if ($this->enableWishmaker == true)
+		{
+			$this->modules['wishmaker'] = 
+				[
+					'class' => 'kirillantv\wishmaker\Module'
+					];	
+		}*/
 	}
 }
 ?>
