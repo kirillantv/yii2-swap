@@ -39,14 +39,14 @@ class OrdersController extends Controller
 	public function actionActive() 
     {
         $currentUserId = Yii::$app->user->identity->id;
-        $model = Order::find()->joinWith(['item'])->forUser($currentUserId)->active();
+        $model = Order::find()->joinWith(['item', 'catcher'])->forUser($currentUserId)->active();
         return $this->render('orders', ['model' => $model]);
     }
     
     public function actionArchive() 
     {
         $currentUserId = Yii::$app->user->identity->id;
-        $model = Order::find()->joinWith(['item'])->forUser($currentUserId)->archive();
+        $model = Order::find()->joinWith(['item', 'catcher'])->forUser($currentUserId)->archive();
         return $this->render('orders', ['model' => $model]);
     }
 }

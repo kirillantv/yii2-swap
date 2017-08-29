@@ -29,6 +29,7 @@ use yii\db\Expression;
 class Item extends \yii\db\ActiveRecord
 {
     const SCENARIO_CHANGE_STATUS = 'change_status';
+    const SCENARIO_CHANGE_TITLE = 'change_title';
     /**
      * @inheritdoc
      */
@@ -76,6 +77,7 @@ class Item extends \yii\db\ActiveRecord
     public function scenarios() {
         $scenarios = parent::scenarios();
         $scenarios[self::SCENARIO_CHANGE_STATUS] = $scenarios[self::SCENARIO_DEFAULT];
+        $scenarios[self::SCENARIO_CHANGE_TITLE] = ['title'];
         return $scenarios;
     }
 
@@ -147,7 +149,7 @@ class Item extends \yii\db\ActiveRecord
      */
     public function getValues()
     {
-        return $this->hasMany(Value::className(), ['item_id' => 'id']);
+        return $this->hasMany(Value::className(), ['item_id' => 'id'])->with('itemAttribute');
     }
 
     /**
@@ -185,7 +187,7 @@ class Item extends \yii\db\ActiveRecord
     public function afterSave($insert, $changedAttributes)
     {
     	$this->updateCategories();
-        if ($this->scenario != self::SCENARIO_CHANGE_STATUS) {
+        if ($this->scenario != self::SCENARIO_CHANGE_STATUS && $this->scenario != self::SCENARIO_CHANGE_TITLE) {
             $this->updateBets();
         }
     	parent::afterSave($insert, $changedAttributes);

@@ -22,7 +22,7 @@ class ItemsController extends Controller
 {
 	public function actionIndex() 
 	{
-		$model = Item::find()->joinWith(['categories', 'values', 'bets'])->active();
+		$model = Item::find()->with(['categories', 'values', 'bets'])->joinWith(['itemAttributes'], false)->active();
 		$filter = new ItemSearch();
 		if ($filter->loadSearchParams(Yii::$app->request->get()))
 		{
@@ -83,6 +83,7 @@ class ItemsController extends Controller
 	             */
 	            if ($model->hasCustomTitle())
 	            {
+	            	$model->scenario = Item::SCENARIO_CHANGE_TITLE;
 	            	$model->title = Title::generateCustomTitle($model);
 	            	$model->save();
 	            }
@@ -90,7 +91,7 @@ class ItemsController extends Controller
 	                'success',
 	                'Item was successfully created'
         		);
-	            return $this->redirect(['swap/item/view', 'id' => $model->id]);
+	            return $this->redirect(['items/index']);
 	        } else {
 	            return $this->render('create', [
 	                'model' => $model,

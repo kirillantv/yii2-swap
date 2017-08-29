@@ -87,6 +87,7 @@ class ItemsController extends Controller
              */
             if ($model->hasCustomTitle())
             {
+            	$model->scenario = Item::SCENARIO_CHANGE_TITLE;
             	$model->title = Title::generateCustomTitle($model);
             	$model->save();
             }

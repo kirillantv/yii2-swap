@@ -22,17 +22,7 @@ class Module extends \yii\base\Module
 			'message' => [
 				'class' => 'kirillantv\swap\modules\message\Module'
 				],
-			'wishmaker' => [
-				'class' => 'kirillantv\wishmaker\Module'
-				]
 			];
-		/*if ($this->enableWishmaker == true)
-		{
-			$this->modules['wishmaker'] = 
-				[
-					'class' => 'kirillantv\wishmaker\Module'
-					];	
-		}*/
 	}
 }
 ?>
