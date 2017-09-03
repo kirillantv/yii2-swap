@@ -30,6 +30,7 @@ class Item extends \yii\db\ActiveRecord
 {
     const SCENARIO_CHANGE_STATUS = 'change_status';
     const SCENARIO_CHANGE_TITLE = 'change_title';
+    
     /**
      * @inheritdoc
      */
@@ -37,7 +38,10 @@ class Item extends \yii\db\ActiveRecord
     {
         return '{{%item}}';
     }
-    
+
+    /**
+     * @inheritdoc
+     */    
     public function behaviors()
     {
     	return [
@@ -74,6 +78,9 @@ class Item extends \yii\db\ActiveRecord
         ];
     }
     
+    /**
+     * @inheritdoc
+     */    
     public function scenarios() {
         $scenarios = parent::scenarios();
         $scenarios[self::SCENARIO_CHANGE_STATUS] = $scenarios[self::SCENARIO_DEFAULT];

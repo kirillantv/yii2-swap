@@ -4,15 +4,14 @@ use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\bootstrap\Button;
 use yii\bootstrap\ActiveForm;
-
+use yii\helpers\Url;
 
 
 ?>
 <div class="panel panel-default">
-        <div class="panel-heading"><strong><?= Html::encode($item->title)?></strong></div>
+        <div class="panel-heading"><strong><a href="<?= Url::to(['items/view', 'id' => $item->id]); ?>"><?= Html::encode($item->title)?></a></strong></div>
         <div class="panel-body">
-        	
-        		<img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image">
+        	<img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image">
         	
         	<table class="table table-condensed">
         		<tbody>
@@ -31,7 +30,6 @@ use yii\bootstrap\ActiveForm;
         			</tr>
         		</tbody>
         	</table>
-        	<?/*= Html::encode($item->item_author) */?>
         	</div>
         	
         <div class="panel-footer">

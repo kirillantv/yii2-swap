@@ -9,7 +9,6 @@
 namespace kirillantv\swap\widgets;
  
 use yii\widgets\Menu;
-use Yii;
 use yii\base\Widget;
 
 class ManagementMenu extends Widget

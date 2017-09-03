@@ -11,6 +11,7 @@ namespace kirillantv\swap\controllers;
 use Yii;
 use yii\web\Controller;
 use yii\base\Model;
+use yii\filters\AccessControl;
 use kirillantv\swap\models\Item;
 use kirillantv\swap\models\Category;
 use kirillantv\swap\models\Attribute;
@@ -20,6 +21,26 @@ use kirillantv\swap\helpers\Title;
 
 class ItemsController extends Controller
 {
+	public function behaviors()
+	{
+		return [
+			'access' => [
+				'class' => AccessControl::classname(),
+				'rules' => [
+					[
+						'allow' => true,
+						'actions' => ['create'],
+						'roles' => ['@']
+						],
+					[
+					'allow' => true,
+					'actions' => ['index', 'view', 'category'],
+					'roles' => ['?', '@']
+						]
+					],
+				]
+			];
+	}
 	public function actionIndex() 
 	{
 		$model = Item::find()->with(['categories', 'values', 'bets'])->joinWith(['itemAttributes'], false)->active();
@@ -68,39 +89,44 @@ class ItemsController extends Controller
     
     public function actionCreate()
     {
-    	if (Yii::$app->user->isGuest) {
-            return $this->redirect(['/user/security/login']);
+    	$model = new Item();
+		$values = $this->initValues($model);
+		$post = Yii::$app->request->post();
+        if ($model->load($post) && $model->save() && Model::loadMultiple($values, $post)) {
+            $this->processValues($values, $model);
+            /**
+             * ОСТОРОЖНО!!!
+             * КОСТЫЛЬ!
+             * 
+             */
+            if ($model->hasCustomTitle())
+            {
+            	$model->scenario = Item::SCENARIO_CHANGE_TITLE;
+            	$model->title = Title::generateCustomTitle($model);
+            	$model->save();
+            }
+			Yii::$app->session->setFlash(
+                'success',
+                'Item was successfully created'
+    		);
+            return $this->redirect(['items/index']);
         } else {
-        	$model = new Item();
-			$values = $this->initValues($model);
-			$post = Yii::$app->request->post();
-	        if ($model->load($post) && $model->save() && Model::loadMultiple($values, $post)) {
-	            $this->processValues($values, $model);
-	            /**
-	             * ОСТОРОЖНО!!!
-	             * КОСТЫЛЬ!
-	             * 
-	             */
-	            if ($model->hasCustomTitle())
-	            {
-	            	$model->scenario = Item::SCENARIO_CHANGE_TITLE;
-	            	$model->title = Title::generateCustomTitle($model);
-	            	$model->save();
-	            }
-				Yii::$app->session->setFlash(
-	                'success',
-	                'Item was successfully created'
-        		);
-	            return $this->redirect(['items/index']);
-	        } else {
-	            return $this->render('create', [
-	                'model' => $model,
-	                'values' => $values
-	            ]);
-	        }
+            return $this->render('create', [
+                'model' => $model,
+                'values' => $values
+            ]);
         }
     }
     
+    public function actionView($id)
+    {
+    	$item = Item::findOne($id);
+    	
+    	if ($item)
+    	{
+    		return $this->render('view', ['item' => $item]);
+    	}
+    }
     private function initValues(Item $model) 
     {
     	/** @var Value[] $value */
@@ -125,15 +151,15 @@ class ItemsController extends Controller
     private function processValues($values, Item $model)
     {
     	foreach ($values as $value) {
-        		$value->item_id = $model->id;
-        		if ($value->validate()) {
-        			if (!empty($value->value_string)){
-        				$value->save();
-        			} else {
-        				$value->delete();
-        			}
-        		}
-        	}
+    		$value->item_id = $model->id;
+    		if ($value->validate()) {
+    			if (!empty($value->value_string)){
+    				$value->save();
+    			} else {
+    				$value->delete();
+    			}
+    		}
+    	}
     }
     
     protected function findCategoryModel($id)

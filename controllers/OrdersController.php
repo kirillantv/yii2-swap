@@ -73,7 +73,7 @@ class OrdersController extends Controller
 	                'success',
 	                'Message to @'.$item->author->username.' was successfully sent'
         		);
-        	return $this->redirect(['items/index']);
+        	return $this->redirect(['orders/create', 'id' => $id]);
 		}
 		else {
             return $this->render('create', [

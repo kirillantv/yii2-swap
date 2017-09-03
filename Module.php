@@ -12,8 +12,6 @@ use Yii;
 
 class Module extends \yii\base\Module
 {
-	public $enableWishmaker = true;
-	
 	public function init() 
 	{
 		parent::init();

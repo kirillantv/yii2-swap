@@ -1,8 +1,7 @@
 <?php
 use yii\bootstrap\Html;
-use kirillantv\swap\widgets\OrderForm;
 
-$this->title = "To swap";
+$this->title = $item->title;
 ?>
 <div class="container">
 	<div class="col-md-12">
@@ -20,10 +19,7 @@ $this->title = "To swap";
 			 		<?= $this->render('/_itemView', ['item' => $item]); ?>
 					<div class="col-xs-12">
 						<div class="col-xs-12">
-							<?= OrderForm::widget(['activeMessage' => $activeMessage,
-													'passiveMessage' => $passiveMessage,
-													'item' => $item,
-													'order' => $order]) ?>
+							
 						</div>
 					</div>
 			 	</div>
