@@ -9,6 +9,8 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\data\ActiveDataProvider;
 use yii\widgets\Menu;
+use yii\helpers\Url;
+use kirillantv\dynamicvalue\DynamicValue;
 
 $this->title = 'My orders';
 
@@ -52,8 +54,12 @@ $items = [
                         	'attribute' => 'id'
                         	],
                         [
-                            'label' => 'Item ID',
-                            'attribute' => 'item_id'
+                            'label' => 'Item Title',
+                            'attribute' => 'item_id',
+                            'format' => 'raw',
+                            'value' => function($value) {
+                            	return '<a href="'.Url::to(['items/view', 'id' => $value->item->id]).'" target="blank">'.$value->item->title.'</a>';
+                            	}
                         ],
                         [
                             'label' => 'Giver',
@@ -71,7 +77,28 @@ $items = [
                             'value' => function ($data) {
                                 return $data->status == 1 ? Html::encode('In process') : Html::encode('Archive');
                             }
-                        ]
+                        ],
+                        [
+                        	'label' => 'Manage',
+                        	'format' => 'raw',
+                        	'value' => function ($data) {
+                        		return DynamicValue::widget([
+                        			'data' => $data,
+                        			'column' => 'status',
+                        			'items' => [
+                        				[
+                        					'value' => 1,
+                        					'link' => ['orders/create', 'id' => $data->id],
+                        					'tag' => 'span',
+                        					'label' => "I've got it!",
+                        					'options' => [
+                        						'class' => 'btn btn-success btn-block'
+                        						]
+                        					]
+                        				]
+                        			]);
+                        	}
+                        ],
                         
                     ]
 				]);
