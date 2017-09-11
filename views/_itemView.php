@@ -1,5 +1,6 @@
 <?php
 use yii\helpers\Html;
+use yii\helpers\Url;
 ?>
 <div class="col-xs-12">
  	<span class="pull-right">
@@ -7,8 +8,8 @@ use yii\helpers\Html;
  			from: @<?= $item->author->username ?>
  		</h4>
  	</span>
- </div>
- <table class="table table-condensed">
+</div>
+<table class="table table-condensed">
 	<tbody>
 		<?php foreach ($item->values as $attribute) {?>
 		<tr>
@@ -23,6 +24,6 @@ use yii\helpers\Html;
 		@<?= $item->author->username ?> wants:
 	</strong>
 	<?php foreach ($item->bets as $bet) {?>
-		<span class="btn btn-sm btn-success"><?= Html::encode($bet->name) ?></span>
+		<a class="btn btn-sm btn-success" href="<?= Url::to(['items/bet','id' => $bet->id]); ?>"><?= Html::encode($bet->name) ?></a>
 	<?php } ?>
 </div>

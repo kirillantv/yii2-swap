@@ -10,7 +10,8 @@ namespace kirillantv\swap\controllers;
 
 use Yii;
 use yii\web\Controller;
-use kirillantv\swap\filters\AccessControl;
+use yii\helpers\Url;
+use kirillantv\swap\filters\OrderAccessControl;
 use kirillantv\swap\models\Item;
 use kirillantv\swap\models\Order;
 use kirillantv\swap\modules\message\models\Message;
@@ -21,11 +22,11 @@ class OrdersController extends Controller
 	{
 		return [
 			'access' => [
-				'class' => AccessControl::classname(),
+				'class' => OrderAccessControl::classname(),
 				'rules' => [
 					[
 						'allow' => true,
-						'actions' => ['create'],
+						'actions' => ['create', 'approve'],
 						'roles' => ['@']
 						]
 					]
@@ -83,5 +84,17 @@ class OrdersController extends Controller
                 'passiveMessage' => $passiveMessage
             ]);
 		} 
+	}
+	
+	public function actionApprove($order, $backUrl = null)
+	{
+		if ($backUrl == null)
+		{
+			$backUrl = Url::home();
+		}
+		$model = Order::findOne($order);
+		$model->approve();
+		return $this->redirect($backUrl);
+		
 	}
 }

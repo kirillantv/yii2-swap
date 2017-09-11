@@ -5,6 +5,7 @@
  * 
  * For more information read README and LICENSE file 
  */
+ 
 namespace kirillantv\swap\filters;
 
 use Yii;
@@ -12,25 +13,8 @@ use yii\web\ForbiddenHttpException;
 use kirillantv\swap\models\Order;
 use kirillantv\swap\models\Item;
 
-class AccessControl extends \yii\filters\AccessControl
+class OrderAccessControl extends AccessControl
 {
-	public function beforeAction($action)
-	{
-		if (!parent::beforeAction($action)) {
-		        return false;
-		}
-		
-		$actionName = $action->id;
-		$beforeAction = 'before'.$actionName;
-		
-		if ($this->hasMethod($beforeAction))
-		{
-			return $this->$beforeAction();
-		}
-		
-		return true;
-	}
-	
 	public function beforeCreate()
 	{
 		$item = Item::findOne(Yii::$app->request->get('id'));
@@ -68,5 +52,5 @@ class AccessControl extends \yii\filters\AccessControl
 		{
 			throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
 		}
-	}
+	}	
 }

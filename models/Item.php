@@ -28,6 +28,8 @@ use yii\db\Expression;
  */
 class Item extends \yii\db\ActiveRecord
 {
+	const STATUS_ARCHIVE = 0;
+	const STATUS_ACTIVE = 1;
     const SCENARIO_CHANGE_STATUS = 'change_status';
     const SCENARIO_CHANGE_TITLE = 'change_title';
     
@@ -102,7 +104,18 @@ class Item extends \yii\db\ActiveRecord
             'active' => 'Active',
         ];
     }
-
+	
+	public function toArchive()
+	{
+		$this->active = self::STATUS_ARCHIVE;
+		$this->save(false);
+	}
+	
+	public function toActive()
+	{
+		$this->active = self::STATUS_ACTIVE;
+		$this->save(false);		
+	}
     /**
      * @return \yii\db\ActiveQuery
      */

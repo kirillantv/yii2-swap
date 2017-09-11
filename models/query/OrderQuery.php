@@ -11,7 +11,7 @@ class OrderQuery extends \yii\db\ActiveQuery
 {
     public function active()
     {
-        return $this->andWhere(['status' => 1]);
+        return $this->andWhere(['status' => [1, 10, -1]]);
     }
     
     public function archive()

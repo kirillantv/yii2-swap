@@ -5,12 +5,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\data\ActiveDataProvider;
+use yii\helpers\ArrayHelper;
 use yii\widgets\Menu;
 use yii\helpers\Url;
 use kirillantv\dynamicvalue\DynamicValue;
+use kirillantv\swap\models\Order;
 
 $this->title = 'My orders';
 
@@ -72,27 +75,39 @@ $items = [
                             'value' => 'catcher.username'
                         ],
                         [
-                            'label' => 'Status',
-                            'attribute' => 'status',
-                            'value' => function ($data) {
-                                return $data->status == 1 ? Html::encode('In process') : Html::encode('Archive');
-                            }
-                        ],
+                        	'label' => 'Last update',
+                        	'attribute' => 'updated_at'
+                        	],
                         [
-                        	'label' => 'Manage',
+                        	'label' => 'Bets',
+                        	'value' => function (Order $order) {
+                        		return implode(', ', ArrayHelper::map($order->bets, 'id', 'name'));;
+                        	}
+                        	],
+                        [
+                        	'label' => 'Status',
+                        	'attribute' => 'status',
                         	'format' => 'raw',
-                        	'value' => function ($data) {
+                        	'value' => function (Order $order) {
                         		return DynamicValue::widget([
-                        			'data' => $data,
+                        			'data' => $order,
                         			'column' => 'status',
                         			'items' => [
                         				[
-                        					'value' => 1,
-                        					'link' => ['orders/create', 'id' => $data->id],
-                        					'tag' => 'span',
-                        					'label' => "I've got it!",
+                        					'value' => Order::STATUS_ACTIVE,
+                        					'link' => ['orders/approve', 'order' => $order->id, 'backUrl' => Url::current()],
+                        					'label' => 'I\'ve got it!',
                         					'options' => [
                         						'class' => 'btn btn-success btn-block'
+                        						]
+                        					],
+                        				[
+                        					'value' => Order::STATUS_APPROVED_BY_ONE,
+                        					'link' => Yii::$app->user->identity->id == $order->approved_by ? null : ['orders/approve', 'order' => $order->id, 'backUrl' => Url::current()],
+                        					'tag' => 'div' ,
+                        					'label' => Yii::$app->user->identity->id == $order->approved_by ? 'Waiting for partner' : 'I\'ve got it!',
+                        					'options' => [
+                        						'class' => Yii::$app->user->identity->id == $order->approved_by ? 'btn btn-info btn-block' : 'btn btn-success btn-block',
                         						]
                         					]
                         				]

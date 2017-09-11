@@ -24,7 +24,7 @@ use yii\helpers\Url;
         			<tr>
         					<td colspan="2">
         						<?php foreach ($item->bets as $bet) {?>
-        						<span class="label label-success"><?= Html::encode($bet->name) ?></span>
+        						<a class="label label-success" href="<?= Url::to(['items/bet', 'id' => $bet->id]); ?>"><?= Html::encode($bet->name) ?></a>
         						<?php } ?>
         					</td>
         			</tr>

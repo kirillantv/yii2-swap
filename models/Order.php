@@ -4,6 +4,8 @@ namespace kirillantv\swap\models;
 
 use Yii;
 use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
 use kirillantv\swap\models\Item;
 /**
  * This is the model class for table "{{%order}}".
@@ -20,6 +22,18 @@ use kirillantv\swap\models\Item;
  */
 class Order extends \yii\db\ActiveRecord
 {
+    const STATUS_ACTIVE = 1;
+    
+    const STATUS_ARCHIVE = 0;
+    
+    const STATUS_ERROR = -1;
+    
+    const STATUS_APPROVED_BY_ONE = 10;
+    
+    const NOT_APPROVED = null;
+    
+    const APPROVED_BY_ALL = 0;
+    
     const SCENARIO_CREATE = 'create';
     /**
      * @inheritdoc
@@ -41,6 +55,12 @@ class Order extends \yii\db\ActiveRecord
     			'class' => BlameableBehavior::classname(),
     			'createdByAttribute' => 'catcher_id',
     			'updatedByAttribute' => false
+    			],
+    		[
+    			'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'updated_at',
+                'value' => new Expression('NOW()'),    			
     			]
     		];
     }
@@ -53,6 +73,7 @@ class Order extends \yii\db\ActiveRecord
             [['item_id'], 'required'],
             [['item_id', 'status'], 'integer'],
             [['item_id'], 'exist', 'skipOnError' => true, 'targetClass' => Item::className(), 'targetAttribute' => ['item_id' => 'id']],
+            [['approved_by'], 'safe'],
             [['betsArray'], 'required']
         ];
     }
@@ -69,7 +90,26 @@ class Order extends \yii\db\ActiveRecord
             'status' => 'Status',
         ];
     }
-
+    
+    public function approve()
+    {
+    	$status = $this->status;
+    	
+    	if ($status === Order::STATUS_ACTIVE)
+    	{
+    		$this->status = Order::STATUS_APPROVED_BY_ONE;
+    		$this->approved_by = Yii::$app->user->identity->id;
+    		$this->save(false);
+    	}
+    	if ($status === Order::STATUS_APPROVED_BY_ONE && $this->approved_by != Yii::$app->user->identity->id)
+    	{
+    		$this->status = Order::STATUS_ARCHIVE;
+    		$this->approved_by = Order::APPROVED_BY_ALL;
+    		$this->save(false);
+    	}
+    	
+    }
+	
     /**
      * @return \yii\db\ActiveQuery
      */

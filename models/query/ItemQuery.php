@@ -35,7 +35,12 @@ class ItemQuery extends \yii\db\ActiveQuery
         }
         return $this->andWhere(['category_id' => array_unique($ids)]);
     }
-
+	
+	public function forBet($id)
+	{
+		$ids = [$id];
+		return $this->andWhere(['bet_id' => $ids]);
+	}
     /**
      * @inheritdoc
      * @return \common\models\Item[]|array

@@ -1,5 +1,5 @@
 <?php
-$this->title = 'Create Item';
+$this->title = 'Update Item';
 
 /* @var $this yii\web\View */
 /* @var $model kirillantv\swap\models\Item */
@@ -7,6 +7,6 @@ $this->title = 'Create Item';
 /* @var $values array kirillantv\swap\models\Value */
 ?>
 
-<div class="create-form">
+<div class="update-form">
     <?= $this->render('_form', ['model' => $model, 'values' => $values]); ?>
 </div>
