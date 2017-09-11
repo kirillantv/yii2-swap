@@ -8,5 +8,5 @@ $this->title = 'Create Item';
 ?>
 
 <div class="create-form">
-    <?= $this->render('_form', ['model' => $model, 'values' => $values]); ?>
+    <?= $this->render('_form', ['model' => $model, 'values' => $values, 'uploadForm' => $uploadForm]); ?>
 </div>

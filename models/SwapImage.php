@@ -18,7 +18,19 @@ class SwapImage extends \yii\db\ActiveRecord
 {
 	public $imageFile;
 	
+	public static function tableName()
+	{
+		return '{{%swap_image}}';
+	}
+	
 	public function rules()
+	{
+		return [
+			[['path'], 'string'],
+			[['item_id'], 'integer']
+			];
+	}
+	/*public function rules()
 	{
 		return [
 			[['imageFile'], 'image', 'skipOnEmpty' => false, 'extensions' => 'png, jpg, jpeg, gif']
@@ -33,5 +45,5 @@ class SwapImage extends \yii\db\ActiveRecord
         } else {
             return false;
         }
-	}
+	}*/
 }

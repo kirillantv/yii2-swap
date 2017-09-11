@@ -21,6 +21,8 @@ use kirillantv\swap\models\search\ItemSearch;
 use kirillantv\swap\helpers\Title;
 use kirillantv\swap\models\Order;
 use kirillantv\swap\modules\message\models\Message;
+use kirillantv\swap\models\forms\UploadForm;
+use yii\web\UploadedFile;
 
 class ItemsController extends Controller
 {
@@ -114,6 +116,7 @@ class ItemsController extends Controller
     public function actionCreate()
     {
     	$model = new Item();
+    	$uploadForm = new UploadForm();
 		$values = $this->initValues($model);
 		$post = Yii::$app->request->post();
         if ($model->load($post) && $model->save() && Model::loadMultiple($values, $post)) {
@@ -129,6 +132,9 @@ class ItemsController extends Controller
             	$model->title = Title::generateCustomTitle($model);
             	$model->save();
             }
+            $uploadForm->imageFile = UploadedFile::getInstance($uploadForm, 'imageFile');
+            $uploadForm->item_id = $model->id;
+            $uploadForm->upload();
 			Yii::$app->session->setFlash(
                 'success',
                 'Item was successfully created'
@@ -137,7 +143,8 @@ class ItemsController extends Controller
         } else {
             return $this->render('create', [
                 'model' => $model,
-                'values' => $values
+                'values' => $values,
+                'uploadForm' => $uploadForm
             ]);
         }
     }

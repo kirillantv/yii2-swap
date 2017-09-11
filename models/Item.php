@@ -179,6 +179,11 @@ class Item extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Attribute::className(), ['id' => 'attribute_id'])->viaTable('{{%value}}', ['item_id' => 'id']);
     }
+    
+    public function getImages()
+    {
+    	return $this->hasMany(SwapImage::className(), ['item_id' => 'id']);
+    }
 
     /**
      * @inheritdoc

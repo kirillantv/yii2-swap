@@ -12,6 +12,7 @@ use kirillantv\swap\models\Category;
 <?php $form = ActiveForm::begin(); ?>
 <div class="row">
 	<div class="col-md-6">
+		<?= $form->field($uploadForm, 'imageFile')->fileInput() ?>
 		<?php foreach ($values as $value): ?>
 		<?= $form->field($value, '[' . $value->itemAttribute->id . ']value_string')->label($value->itemAttribute->name) ?>
 		<?php endforeach; ?>

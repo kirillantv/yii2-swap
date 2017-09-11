@@ -11,7 +11,7 @@ use yii\helpers\Url;
 <div class="panel panel-default">
         <div class="panel-heading"><strong><a href="<?= Url::to(['items/view', 'id' => $item->id]); ?>"><?= Html::encode($item->title)?></a></strong></div>
         <div class="panel-body">
-        	<img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image">
+        	<img src="<?= $item->images[0]->path ?>" class="img-responsive" style="width:100%" alt="Image">
         	
         	<table class="table table-condensed">
         		<tbody>
