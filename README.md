@@ -1,6 +1,6 @@
 # Getting started with Yii2-swap
 
-*** Alpha version v0.8.0 ***
+*** Alpha version v0.8.3-alpha ***
 ### 1. Download
 Yii2-Swap extension can be installed using composer. Run the command bellow in console to download 
 and install Yii2-swap:
@@ -88,6 +88,10 @@ You can get access to swap console easily with action below:
 `swap/items` input all active items
 
 `swap/items/create` create item with attributes, categories and bets
+
+`swap/items/edit` param `id`. Update form for item
+
+`swap/items/view` param `id`. View form for item. Users can swap from this page.
 
 ##### 2. Orders
 `swap/orders/create` create order when user clicks swap button. Available to choose bet
