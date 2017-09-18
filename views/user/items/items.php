@@ -3,6 +3,7 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\data\ActiveDataProvider;
 use yii\widgets\Menu;
+use yii\helpers\Url;
 
 $this->title = 'My items';
 
@@ -18,6 +19,7 @@ $items = [
 		['label' => 'Active', 'url' => ['user/items/active']],
 		['label' => 'Archive', 'url' => ['user/items/archive']],
 	];
+Url::remember();
 ?>
 
 <div class="row">
@@ -56,7 +58,16 @@ $items = [
                                             'value' => function ($data) {
                                                 return $data->active == 1 ? Html::encode('Active') : Html::encode('Swapped');
                                             }
-                                        ]
+                                        ],
+                                        [
+                                        	'label' => 'Management',
+                                        	'format' => 'raw',
+                                        	'value' => function ($data){
+                                        		return Html::a('Delete', ['items/delete', 'id' => $data->id]).
+                                        		Html::tag('br').
+                                        		Html::a('Edit', ['items/edit', 'id' => $data->id]);
+                                        	}
+                                        	]
                                     ]
 				]);
                 ?>

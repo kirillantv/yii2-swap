@@ -12,16 +12,19 @@ use kirillantv\swap\models\SwapImage;
 
 class UploadForm extends \yii\base\Model
 {
+	const SCENARIO_UPDATE = 'update';
+	
 	const PATH_PREFIX = '/';
 	
-	public $imageFile;
+	public $imageFiles;
 	
 	public $item_id;
 	
 	public function rules()
 	{
 		return [
-			[['imageFile'], 'image', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, jpeg'],
+			[['imageFiles'], 'image', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, jpeg', 'uploadRequired' => 'Please, upload image', 'maxFiles' => 4,'except' => UploadForm::SCENARIO_UPDATE],
+			[['imageFiles'], 'image', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, jpeg', 'uploadRequired' => 'Please, upload image', 'maxFiles' => 4,'on' => UploadForm::SCENARIO_UPDATE],
 			];
 	}
 	
@@ -32,11 +35,16 @@ class UploadForm extends \yii\base\Model
         	{
         		mkdir($this->uploadPath);
         	}
-        	$absoluteName = $this->uploadPath . uniqid() . '.' . $this->imageFile->extension;
-            if ($this->imageFile->saveAs($absoluteName))
-            {
-            	$this->savePath($absoluteName);
-            }
+        	
+        	foreach ($this->imageFiles as $image)
+        	{
+        		$absoluteName = $this->uploadPath . uniqid() . '.' . $image->extension;
+                if ($image->saveAs($absoluteName))
+                {
+            	    $this->savePath($absoluteName);
+                }
+        	}
+ 
             return true;
         } else {
             return false;

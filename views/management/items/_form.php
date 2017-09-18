@@ -3,11 +3,13 @@
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use kirillantv\swap\models\Category;
+use kirillantv\swap\models\Attribute;
 
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Item */
 /* @var $form yii\widgets\ActiveForm */
+
 ?>
 
 <div class="item-form">
@@ -30,7 +32,11 @@ use kirillantv\swap\models\Category;
 	</div>
 	<div class="col-md-6">
 		<?php foreach ($values as $value): ?>
+			<?php if ($value->itemAttribute->type == Attribute::TYPE_DROPDOWN): ?>
+			<?= $form->field($value, '[' . $value->itemAttribute->id . ']value_string')->dropDownList($value->itemAttribute->valuesArray)->label($value->itemAttribute->name); ?>
+			<?php else: ?>
 			<?= $form->field($value, '[' . $value->itemAttribute->id . ']value_string')->label($value->itemAttribute->name) ?>
+			<?php endif; ?>
 		<?php endforeach; ?>
 	</div>
 </div>

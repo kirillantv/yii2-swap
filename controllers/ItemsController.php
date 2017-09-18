@@ -23,6 +23,7 @@ use kirillantv\swap\models\Order;
 use kirillantv\swap\modules\message\models\Message;
 use kirillantv\swap\models\forms\UploadForm;
 use yii\web\UploadedFile;
+use yii\helpers\Url;
 
 class ItemsController extends Controller
 {
@@ -34,18 +35,19 @@ class ItemsController extends Controller
 				'rules' => [
 					[
 					'allow' => true,
-					'actions' => ['create', 'edit', 'delete', 'to-archive', 'to-active'],
+					'actions' => ['create', 'edit', 'delete', 'to-archive', 'to-active', 'create-item'],
 					'roles' => ['@']
 						],
 					[
 					'allow' => true,
-					'actions' => ['index', 'view', 'category', 'bet'],
+					'actions' => ['index', 'view', 'category', 'bet', 'start-ajax', 'get-item', 'create-ajax'],
 					'roles' => ['?', '@']
 						]
 					],
 				]
 			];
 	}
+	
 	public function actionIndex() 
 	{
 		$model = Item::find()->with(['categories', 'values', 'bets'])->joinWith(['itemAttributes'], false)->active();
@@ -119,7 +121,8 @@ class ItemsController extends Controller
     	$uploadForm = new UploadForm();
 		$values = $this->initValues($model);
 		$post = Yii::$app->request->post();
-        if ($model->load($post) && $model->save() && Model::loadMultiple($values, $post)) {
+        if ($model->load($post) && Model::loadMultiple($values, $post) && $model->validate() && Model::validateMultiple($values, ['value_string'])) {
+            $model->save();
             $this->processValues($values, $model);
             /**
              * ОСТОРОЖНО!!!
@@ -132,7 +135,7 @@ class ItemsController extends Controller
             	$model->title = Title::generateCustomTitle($model);
             	$model->save();
             }
-            $uploadForm->imageFile = UploadedFile::getInstance($uploadForm, 'imageFile');
+            $uploadForm->imageFiles = UploadedFile::getInstances($uploadForm, 'imageFiles');
             $uploadForm->item_id = $model->id;
             $uploadForm->upload();
 			Yii::$app->session->setFlash(
@@ -202,16 +205,21 @@ class ItemsController extends Controller
     public function actionEdit($id)
     {
     	$model = Item::findOne($id);
-    	
+    	$uploadForm = new UploadForm();
+    	$uploadForm->scenario = UploadForm::SCENARIO_UPDATE;
 		$values = $this->initValues($model);
 		$post = Yii::$app->request->post();
-        if ($model->load($post) && $model->save() && Model::loadMultiple($values, $post)) {
+        if ($model->load($post) && Model::loadMultiple($values, $post) && $model->validate() && Model::validateMultiple($values, ['value_string'])) {
+            $model->save();
             $this->processValues($values, $model);
             /**
              * ОСТОРОЖНО!!!
              * КОСТЫЛЬ!
              * 
              */
+            $uploadForm->imageFiles = UploadedFile::getInstances($uploadForm, 'imageFiles');
+            $uploadForm->item_id = $model->id;
+            $uploadForm->upload();
             if ($model->hasCustomTitle())
             {
             	$model->scenario = Item::SCENARIO_CHANGE_TITLE;
@@ -226,7 +234,8 @@ class ItemsController extends Controller
         } else {
             return $this->render('update', [
                 'model' => $model,
-                'values' => $values
+                'values' => $values,
+                'uploadForm' => $uploadForm
             ]);
         }
     }
@@ -240,7 +249,7 @@ class ItemsController extends Controller
                 'success',
                 'Item was successfully deleted'
     		);  
-    		return $this->redirect(['items/index']);
+    		return $this->redirect(Url::previous());
     	}
         if ($result == false)
         {
@@ -248,7 +257,7 @@ class ItemsController extends Controller
                 'success',
                 'Item can\'t be deleted'
     		);  
-    		return $this->redirect(['items/index']);        	
+    		return $this->redirect(Url::previous());        	
         }
     }
     
@@ -280,10 +289,6 @@ class ItemsController extends Controller
         
         foreach (array_diff_key($attributes, $values) as $attribute) {
         	$values[$attribute->id] = new Value(['attribute_id' => $attribute->id]);
-        }
-        
-        foreach ($values as $value) {
-        	$value->setScenario(Value::SCENARIO_TABULAR);
         }
         
         return $values;

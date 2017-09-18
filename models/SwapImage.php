@@ -16,8 +16,6 @@ namespace kirillantv\swap\models;
  */
 class SwapImage extends \yii\db\ActiveRecord
 {
-	public $imageFile;
-	
 	public static function tableName()
 	{
 		return '{{%swap_image}}';
@@ -30,20 +28,4 @@ class SwapImage extends \yii\db\ActiveRecord
 			[['item_id'], 'integer']
 			];
 	}
-	/*public function rules()
-	{
-		return [
-			[['imageFile'], 'image', 'skipOnEmpty' => false, 'extensions' => 'png, jpg, jpeg, gif']
-			];		
-	}
-	
-	public function upload()
-	{
-        if ($this->validate()) {
-            $this->imageFile->saveAs('uploads/' . $this->imageFile->baseName . '.' . $this->imageFile->extension);
-            return true;
-        } else {
-            return false;
-        }
-	}*/
 }

@@ -70,12 +70,15 @@ class Item extends \yii\db\ActiveRecord
             [['title'], 'required', 'when' => function ($model) {
                     return $model->hasCustomTitle() === false;
             }],
+            [['title'], 'default', 'value' => function($value) {
+            	return uniqid();
+            }],
             [['active'], 'default', 'value' => function ($value) {
             	return 1;
             }],
             [['active'], 'integer'],
             [['categoriesArray'], 'safe'],
-            [['betsString'], 'safe'],
+            [['betsString'], 'required'],
             [['title'], 'string', 'max' => 255]
         ];
     }
@@ -211,8 +214,8 @@ class Item extends \yii\db\ActiveRecord
     
     public function afterSave($insert, $changedAttributes)
     {
-    	$this->updateCategories();
         if ($this->scenario != self::SCENARIO_CHANGE_STATUS && $this->scenario != self::SCENARIO_CHANGE_TITLE) {
+        	$this->updateCategories();
             $this->updateBets();
         }
     	parent::afterSave($insert, $changedAttributes);

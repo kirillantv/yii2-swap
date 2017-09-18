@@ -35,9 +35,26 @@ class Value extends \yii\db\ActiveRecord
             [['item_id', 'attribute_id'], 'required'],
             [['item_id', 'attribute_id', 'value_number'], 'integer'],
             [['value_string'], 'string', 'max' => 255],
-            [['value_string'], 'required', 'except' => self::SCENARIO_TABULAR],
+            [['value_string'], 'required', 'when' => function($model, $attribute) {
+            	return $this->itemAttribute->required == Attribute::ATTRIBUTE_REQUIRED;
+            }, 'whenClient' => 'function (attribute, value) { return '.$this->itemAttribute->required.'=='.Attribute::ATTRIBUTE_REQUIRED.'; }',
+            'message' => $this->itemAttribute->name.' is required'],
+            [['value_string'], 'filter', 'when' => function($model, $attribute) {
+            	return $this->itemAttribute->type == Attribute::TYPE_DROPDOWN;
+            }, 'filter' => function($value){
+            	$available = $this->itemAttribute->valuesArray;
+            	$validate = false;
+            	foreach ($available as $item)
+            	{
+            		if ($item == $value)
+            		{
+            			$validate = true;
+            			return $value;
+            		}
+            	}
+            }],
             [['attribute_id'], 'exist', 'skipOnError' => true, 'targetClass' => Attribute::className(), 'targetAttribute' => ['attribute_id' => 'id']],
-            [['item_id'], 'exist', 'skipOnError' => true, 'targetClass' => Item::className(), 'targetAttribute' => ['item_id' => 'id']],
+            [['item_id'], 'exist', 'skipOnError' => true, 'targetClass' => Item::className(), 'targetAttribute' => ['item_id' => 'id']]
         ];
     }
 

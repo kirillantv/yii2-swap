@@ -8,5 +8,5 @@ $this->title = 'Update Item';
 ?>
 
 <div class="update-form">
-    <?= $this->render('_form', ['model' => $model, 'values' => $values]); ?>
+    <?= $this->render('_form', ['model' => $model, 'values' => $values, 'imageFile', 'uploadForm' => $uploadForm]); ?>
 </div>

@@ -18,6 +18,16 @@ use Yii;
  */
 class Attribute extends \yii\db\ActiveRecord
 {
+	const TYPE_STRING = 'string';
+	
+	const TYPE_NUMBER = 'number';
+	
+	const TYPE_DROPDOWN = 'dropdown';
+	
+	const TYPE_CHECKBOX = 'checkbox';
+	
+	const ATTRIBUTE_REQUIRED = 1;
+	
     /**
      * @inheritdoc
      */
@@ -35,6 +45,10 @@ class Attribute extends \yii\db\ActiveRecord
             [['slug', 'name', 'type'], 'required'],
             [['required', 'searchable'], 'integer'],
             [['slug', 'name', 'type'], 'string', 'max' => 255],
+            [['value'], 'required', 'when' => function($model) {
+            	return $this->type == Attribute::TYPE_DROPDOWN;
+            }],
+            [['value'], 'string']
         ];
     }
 
@@ -71,5 +85,20 @@ class Attribute extends \yii\db\ActiveRecord
     public function getItems()
     {
         return $this->hasMany(Item::className(), ['id' => 'item_id'])->viaTable('{{%value}}', ['attribute_id' => 'id']);
+    }
+    
+    public function getValuesArray()
+    {
+    	if ($this->type == Attribute::TYPE_DROPDOWN)
+    	{
+    		$array = explode(', ', $this->value);
+    		$assocArray = [];
+    		foreach ($array as $item)
+    		{
+    		    $assocArray[$item] = $item;	
+    		}
+    		
+    		return $assocArray;
+    	}
     }
 }
