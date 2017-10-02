@@ -5,7 +5,10 @@ use yii\helpers\ArrayHelper;
 use yii\bootstrap\Button;
 use yii\bootstrap\ActiveForm;
 
-
+/* @var $this yii\web\View */
+/* @var $items kirillantv\swap\models\Item */
+/* @var $categories kirillantv\swap\models\Category */
+/* @var $filter kirillantv\swap\models\search\ItemSearch  */
 
 ?>
 
@@ -32,11 +35,7 @@ use yii\bootstrap\ActiveForm;
 				</div>
 				<div class="col-xs-12">
 					<div class="row">
-						<?php foreach ($items as $item):?>
-					    <div class="col-sm-3">
-					    	<?= $this->render('_item', ['item' => $item]); ?>
-					    </div>
-					    <?php endforeach; ?>
+						<?= $this->render('items', ['items' => $items]); ?>
 					</div>
 				</div>								
 			</div>

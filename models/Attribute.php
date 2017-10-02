@@ -47,7 +47,7 @@ class Attribute extends \yii\db\ActiveRecord
             [['slug', 'name', 'type'], 'string', 'max' => 255],
             [['value'], 'required', 'when' => function($model) {
             	return $this->type == Attribute::TYPE_DROPDOWN;
-            }],
+            }, 'whenClient' => 'function (attribute, value) { return '.$this->type.'=='.Attribute::TYPE_DROPDOWN.'; }'],
             [['value'], 'string']
         ];
     }
@@ -59,11 +59,11 @@ class Attribute extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'slug' => 'Slug',
-            'name' => 'Name',
-            'type' => 'Type',
-            'required' => 'Required',
-            'searchable' => 'Searchable'
+            'slug' => Yii::t('swap', 'Slug'),
+            'name' =>  Yii::t('swap', 'Name'),
+            'type' =>  Yii::t('swap', 'Type'),
+            'required' =>  Yii::t('swap', 'Required'),
+            'searchable' =>  Yii::t('swap', 'Searchable')
         ];
     }
     public static function find()

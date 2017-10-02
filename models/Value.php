@@ -37,8 +37,7 @@ class Value extends \yii\db\ActiveRecord
             [['value_string'], 'string', 'max' => 255],
             [['value_string'], 'required', 'when' => function($model, $attribute) {
             	return $this->itemAttribute->required == Attribute::ATTRIBUTE_REQUIRED;
-            }, 'whenClient' => 'function (attribute, value) { return '.$this->itemAttribute->required.'=='.Attribute::ATTRIBUTE_REQUIRED.'; }',
-            'message' => $this->itemAttribute->name.' is required'],
+            }, 'whenClient' => 'function (attribute, value) { return '.$this->itemAttribute->required.'=='.Attribute::ATTRIBUTE_REQUIRED.'; }'],
             [['value_string'], 'filter', 'when' => function($model, $attribute) {
             	return $this->itemAttribute->type == Attribute::TYPE_DROPDOWN;
             }, 'filter' => function($value){
@@ -57,7 +56,12 @@ class Value extends \yii\db\ActiveRecord
             [['item_id'], 'exist', 'skipOnError' => true, 'targetClass' => Item::className(), 'targetAttribute' => ['item_id' => 'id']]
         ];
     }
-
+    
+	public function scenarios() {
+        $scenarios = parent::scenarios();
+        $scenarios[self::SCENARIO_TABULAR] = $scenarios[self::SCENARIO_DEFAULT];
+        return $scenarios;
+    }
     /**
      * @inheritdoc
      */
@@ -66,8 +70,8 @@ class Value extends \yii\db\ActiveRecord
         return [
             'item_id' => 'Item ID',
             'attribute_id' => 'Attribute ID',
-            'value_string' => 'Value String',
-            'value_number' => 'Value Number',
+            'value_string' =>  $this->scenario == self::SCENARIO_TABULAR ? $this->itemAttribute->name : 'Value String',
+            'value_number' =>  $this->scenario == self::SCENARIO_TABULAR ? $this->itemAttribute->name : 'Value Integer',
         ];
     }
 

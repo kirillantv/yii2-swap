@@ -24,11 +24,6 @@ $buttonsGuestOptions = [
 		    ['label' => 'Signup', 'tagName' => 'a',  'options' => ['href' => '/user/registration/register', 'class' => 'btn btn-link btn-block']]
 		]
 	];
-$orderFormOptions = [
-	                'activeMessage' => $activeMessage,
-					'passiveMessage' => $passiveMessage,
-					'item' => $item,
-					'order' => $order];
 
 $label = null;
 //Render edit buttons for item's author
@@ -44,7 +39,7 @@ if (Yii::$app->user->isGuest)
 //Render swap form for auth users and not item's authors
 if (!Yii::$app->user->isGuest && Yii::$app->user->identity->id != $item->author_id)
 {
-	$label = OrderForm::widget($orderFormOptions);
+	$label = $this->render('/orders/create', ['message' => $message, 'item' => $item, 'order' => $order]);
 }
 ?>
 <div class="container">

@@ -1,33 +1,26 @@
 <?php
+/**
+ * This file is part of Yii2-Swap project
+ * (c) kirillantv <http://github.com/kirillantv/>
+ * 
+ * For more information read README and LICENSE file 
+ */
 use yii\bootstrap\Html;
-use kirillantv\swap\widgets\OrderForm;
+use yii\helpers\ArrayHelper;
+use yii\bootstrap\ActiveForm;
 
-$this->title = "To swap";
+/* @var $this yii\web\View */
+/* @var $item kirillantv\swap\models\Item */
+/* @var $message kirillantv\swap\modules\Message\models\Message */
+/* @var $order kirillantv\swap\models\Order */
 ?>
-<div class="container">
-	<div class="col-md-12">
-		<div class="panel panel-default">
-			 <div class="panel-heading">
-			 	<h2><?= $item->title ?></h2>
-			 </div>
-			 <div class="panel-body">
-			 	<div class="col-md-6 col-xs-12">
-			 		<div style="background-color: rgb(245, 245, 245); height:350px">
-			 			
-			 		</div>
-			 	</div>
-			 	<div class="col-md-6 col-xs-12">
-			 		<?= $this->render('/_itemView', ['item' => $item]); ?>
-					<div class="col-xs-12">
-						<div class="col-xs-12">
-							<?= OrderForm::widget(['activeMessage' => $activeMessage,
-													'passiveMessage' => $passiveMessage,
-													'item' => $item,
-													'order' => $order]) ?>
-						</div>
-					</div>
-			 	</div>
-			 </div>
-		</div>
-	</div>
-</div>
+<h4>
+    <?= Html::encode('Choose bets:');?>
+</h4>
+<?php $form = ActiveForm::begin(); ?>
+<?= Html::activeCheckboxList($order, 'betsArray', ArrayHelper::map($item->bets, 'id', 'name'), ['class' => 'checkbox', 'separator' => '<br>','itemOptions' => ['label' => 'checkbox']]) ?>
+<?= Html::label('Tell to @'.$item->author->username.'little more, for example, about location where you can swap and etc...', 'message-message'); ?>
+<?= Html::activeTextarea($message, 'message', ['class' => 'form-control', 'placeholder' => 'Tell more...'])?>
+<br />
+<?= Html::submitButton('To swap', ['class' => 'btn btn-success btn-block']) ?>
+<?php ActiveForm::end(); ?>

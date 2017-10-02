@@ -48,10 +48,34 @@ class Category extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'slug' => 'Slug',
-            'name' => 'Name',
-            'parent_id' => 'Parent ID',
+            'slug' =>  Yii::t('swap', 'Slug'),
+            'name' =>  Yii::t('swap', 'Name'),
+            'parent_id' =>  Yii::t('swap', 'Parent ID'),
         ];
+    }
+    
+    public function hasParent()
+    {
+    	if ($this->parent != null)
+    	{
+    		return true;
+    	}
+    	else
+    	{
+    		return false;
+    	}
+    }
+    
+    public function hasChildren()
+    {
+    	if ($this->children != null)
+    	{
+    		return 1;
+    	}
+    	else
+    	{
+    		return 0;
+    	}
     }
 
     /**
@@ -60,6 +84,11 @@ class Category extends \yii\db\ActiveRecord
     public function getParent()
     {
         return $this->hasOne(Category::className(), ['id' => 'parent_id']);
+    }
+    
+    public function getChildren()
+    {
+    	return $this->hasMany(Category::className(), ['parent_id' => 'id']);
     }
 
     /**

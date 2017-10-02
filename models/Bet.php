@@ -43,7 +43,7 @@ class Bet extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
+            'name' => Yii::t('swap', 'Name'),
         ];
     }
 

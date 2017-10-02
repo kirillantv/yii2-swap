@@ -13,6 +13,7 @@ use yii\filters\AccessControl;
 use yii\db\Query;
 use kirillantv\swap\modules\message\models\Message;
 use kirillantv\swap\models\Item;
+use kirillantv\swap\modules\message\services\Conversation;
 
 class InboxController extends \yii\web\Controller
 {
@@ -38,22 +39,37 @@ class InboxController extends \yii\web\Controller
 		return $this->render('index', ['dialogs' => $dialogs]);
 	}
 	
-	public function actionConversation($hash, $item, $from, $to)
+	public function actionConversation($item_id, $from, $to)
 	{
-		$dialog =  Message::find()->conversation($hash, $item, $from, $to)->orderBy(['created_at' => SORT_ASC])->all();
-		$info = $dialog[0];
-		$message = new Message(['scenario' => Message::SCENARIO_CONVERSATION]);
-		$message->compose(Item::findOne($item), $info->sender->id == Yii::$app->user->identity->id ? $info->recipient->id : $info->sender->id);
-		
-		if ($message->load(Yii::$app->request->post()) && $message->validate())
+		$conversation = new Conversation(['item_id' => $item_id, 'participants' => [$from, $to]]);
+		if (!Yii::$app->request->isAjax)
 		{
-			$message->save();
-			Yii::$app->session->setFlash(
-	                'success',
-	                'Message to @'.$info->interlocutor.' was successfully sent'
-        		);
-        	return $this->redirect(['conversation', 'hash' => $message->hash, 'item' => $message->item_id, 'from' => $message->from, 'to' => $message->to]);
+			$message = new Message(['scenario' => Message::SCENARIO_CONVERSATION]);
+			$message->compose(Item::findOne($item_id), $conversation->info->sender->id == Yii::$app->user->identity->id ? $conversation->info->recipient->id : $conversation->info->sender->id);
+			
+			if ($message->load(Yii::$app->request->post()) && $message->validate())
+			{
+				$message->save();
+				Yii::$app->session->setFlash(
+		                'success',
+		                'Message to @'.$info->interlocutor.' was successfully sent'
+	        		);
+	        	return $this->redirect(['conversation', 'item' => $message->item_id, 'from' => $message->from, 'to' => $message->to]);
+			}
+			else
+			{
+				return $this->render('conversation', ['message' => $message, 'conversation' => $conversation]);
+			}
 		}
-		return $this->render('conversation', ['dialog' => $dialog, 'message' => $message, 'info' => $info]);
+		else
+		{
+			return $this->renderPartial('conversation', ['message' => $message, 'conversation' => $conversation]);
+		}
+	}
+	
+	public function actionCreate($item_id = null, $to = null)
+	{
+		$message = new Message(['scenario' => Message::SCENARIO_CONVERSATION]);
+		
 	}
 }

@@ -1,5 +1,8 @@
 <?php
 use yii\helpers\Html;
+
+/* @var $this yii\web\View */
+/* @var $categories kirillantv\swap\models\Category */
 ?>
 
 <div class="list-group">

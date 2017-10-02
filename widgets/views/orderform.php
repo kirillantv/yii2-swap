@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * This file is part of Yii2-Swap project
  * (c) kirillantv <http://github.com/kirillantv/>
@@ -8,6 +8,9 @@
 use yii\bootstrap\Html;
 use yii\helpers\ArrayHelper;
 use yii\bootstrap\ActiveForm;
+
+
+
 ?>
 <h4>
     <?= Html::encode('Choose bets:');?>

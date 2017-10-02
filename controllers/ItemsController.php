@@ -24,6 +24,8 @@ use kirillantv\swap\modules\message\models\Message;
 use kirillantv\swap\models\forms\UploadForm;
 use yii\web\UploadedFile;
 use yii\helpers\Url;
+use yii\web\NotFoundHttpException;
+use yii\db\Query;
 
 class ItemsController extends Controller
 {
@@ -35,12 +37,12 @@ class ItemsController extends Controller
 				'rules' => [
 					[
 					'allow' => true,
-					'actions' => ['create', 'edit', 'delete', 'to-archive', 'to-active', 'create-item'],
+					'actions' => ['create', 'edit', 'delete', 'to-archive', 'to-active', 'attribute-values'],
 					'roles' => ['@']
 						],
 					[
 					'allow' => true,
-					'actions' => ['index', 'view', 'category', 'bet', 'start-ajax', 'get-item', 'create-ajax'],
+					'actions' => ['index', 'view', 'category', 'bet'],
 					'roles' => ['?', '@']
 						]
 					],
@@ -50,7 +52,7 @@ class ItemsController extends Controller
 	
 	public function actionIndex() 
 	{
-		$model = Item::find()->with(['categories', 'values', 'bets'])->joinWith(['itemAttributes'], false)->active();
+		$model = Item::find()->with(['categories', 'values', 'bets', 'images'])->joinWith(['itemAttributes'], false)->active();
 		$filter = new ItemSearch();
 		if ($filter->loadSearchParams(Yii::$app->request->get()))
 		{
@@ -59,7 +61,7 @@ class ItemsController extends Controller
         $items = $model->orderBy(['created_at' => SORT_DESC])
             ->all();
             
-       	$categories = Category::find()->all();
+       	$categories = Category::find()->indexBy('id')->all();
 		
 		if ($items) {
 			return $this->render('index', [
@@ -74,25 +76,37 @@ class ItemsController extends Controller
         
 	}
 	
-    public function actionCategory($id)
+    public function actionCategory($id = 0)
     {
-    	$category = $this->findCategoryModel($id);
-    	$model = Item::find()->joinWith(['categories', 'values', 'bets'])->active()
-    	->forCategory($category->id);
-    	$filter = new ItemSearch();
-		if ($filter->loadSearchParams(Yii::$app->request->get()))
-		{
-			$model = $filter->search($model);	
-		}
-    	$items = $model->orderBy(['update_at' => SORT_DESC])->all();
-    	$categories = Category::find()->all();
-    	return $this->render('index', 
-    	    [
-    	    'items' => $items,
-            'categories' => $categories,
-            'id' => $category->id,
-            'filter' => $filter
-    		]);
+    	if (Yii::$app->request->isAjax)
+    	{
+	    	$category = $this->findCategoryModel($id);
+	    	$model = Item::find()->joinWith(['categories', 'values', 'bets'])->active()
+	    	->forCategory($category->id)->orderBy(['update_at' => SORT_DESC])->all();
+	    	Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+	    	return $this->renderAjax('items', ['items' => $model]);
+    	}
+    	else
+    	{
+	    	$category = $this->findCategoryModel($id);
+	    	$model = Item::find()->joinWith(['categories', 'values', 'bets'])->active()
+	    	->forCategory($category->id);
+	    	$filter = new ItemSearch();
+			if ($filter->loadSearchParams(Yii::$app->request->get()))
+			{
+				$model = $filter->search($model);	
+			}
+	    	$items = $model->orderBy(['update_at' => SORT_DESC])->all();
+	    	$categories = Category::find()->indexBy('id')->all();
+	    	return $this->render('index', 
+	    	    [
+	    	    'items' => $items,
+	            'categories' => $categories,
+	            'id' => $category->id,
+	            'filter' => $filter
+	    		]);    		
+    	}
+
     }
     
     public function actionBet($id)
@@ -205,7 +219,7 @@ class ItemsController extends Controller
     public function actionEdit($id)
     {
     	$model = Item::findOne($id);
-    	$uploadForm = new UploadForm();
+    	$uploadForm = new UploadForm(['item_id' => $model->id]);
     	$uploadForm->scenario = UploadForm::SCENARIO_UPDATE;
 		$values = $this->initValues($model);
 		$post = Yii::$app->request->post();
@@ -218,7 +232,7 @@ class ItemsController extends Controller
              * 
              */
             $uploadForm->imageFiles = UploadedFile::getInstances($uploadForm, 'imageFiles');
-            $uploadForm->item_id = $model->id;
+
             $uploadForm->upload();
             if ($model->hasCustomTitle())
             {
@@ -265,7 +279,7 @@ class ItemsController extends Controller
     {
     	$item = $this->findModel($id);
     	$item->scenario = Item::SCENARIO_CHANGE_STATUS;
-    	$item->toArchive();
+    	$result = $item->toArchive();
     	return $this->redirect(['items/view', 'id' => $id]);
     }
 
@@ -275,6 +289,23 @@ class ItemsController extends Controller
     	$item->scenario = Item::SCENARIO_CHANGE_STATUS;
     	$item->toActive();
     	return $this->redirect(['items/view', 'id' => $id]);
+    }
+    
+    public function actionAttributeValues($attributeId, $q)
+    {
+    	$query = new Query();
+    	$query->select('value_string')
+    	->from('{{%value}}')
+    	->where(['attribute_id' => $attributeId])
+    	->andWhere(['like', 'value_string', $q])
+    	->orderBy('value_string');
+    	$command = $query->createCommand();
+    	$data = $command->queryAll();
+	    $out = [];
+	    foreach ($data as $d) {
+	        $out[] = ['value' => $d['value_string']];
+	    }
+	    echo \yii\helpers\Json::encode($out);	
     }
     
     private function initValues(Item $model) 
@@ -289,6 +320,9 @@ class ItemsController extends Controller
         
         foreach (array_diff_key($attributes, $values) as $attribute) {
         	$values[$attribute->id] = new Value(['attribute_id' => $attribute->id]);
+        }
+        foreach ($values as $value) {
+        	$value->setScenario(Value::SCENARIO_TABULAR);
         }
         
         return $values;

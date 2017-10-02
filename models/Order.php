@@ -85,9 +85,9 @@ class Order extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'item_id' => 'Item ID',
-            'catcher_id' => 'Catcher ID',
-            'status' => 'Status',
+            'item_id' =>  Yii::t('swap', 'Item ID'),
+            'catcher_id' =>  Yii::t('swap', 'Catcher ID'),
+            'status' =>  Yii::t('swap', 'Status'),
         ];
     }
     

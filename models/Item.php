@@ -100,24 +100,38 @@ class Item extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'title' => 'Title',
-            'author_id' => 'Author ID',
-            'created_at' => 'Created At',
-            'update_at' => 'Update At',
-            'active' => 'Active',
+            'title' =>  Yii::t('swap', 'Title'),
+            'author_id' =>  Yii::t('swap', 'Author ID'),
+            'created_at' =>  Yii::t('swap', 'Created At'),
+            'update_at' =>  Yii::t('swap', 'Update At'),
+            'active' =>  Yii::t('swap', 'Active'),
         ];
     }
 	
 	public function toArchive()
 	{
 		$this->active = self::STATUS_ARCHIVE;
-		$this->save(false);
+		if ($this->save(false))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 	
 	public function toActive()
 	{
 		$this->active = self::STATUS_ACTIVE;
-		$this->save(false);		
+		if ($this->save(false))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
     /**
      * @return \yii\db\ActiveQuery

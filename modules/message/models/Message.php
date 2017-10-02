@@ -107,4 +107,14 @@ class Message extends \yii\db\ActiveRecord
     {
     	return $this->sender->id == Yii::$app->user->identity->id ? $this->recipient->username : $this->sender->username;
     }
+    
+    /**
+     * Checks whether $this message object was created by current user
+     * 
+     * @return bool
+     */
+    public function isMe()
+    {
+    	return $this->from == Yii::$app->user->identity->id ? true : false;
+    }
 }

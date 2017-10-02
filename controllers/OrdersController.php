@@ -36,30 +36,22 @@ class OrdersController extends Controller
 	
 	public function actionCreate($id)
 	{
-        $order = new Order(['scenario' => Order::SCENARIO_CREATE]);
-		
 		$item = Item::findOne($id);
-		
-		$order->catcher_id = Yii::$app->user->identity->id;
-		$order->item_id = $item->id;
-		
-		// Active Message and passive message
-		// We need to separate it to make different validations for message with order and simple message
-		$activeMessage = new Message();
-		$activeMessage->compose($item);
-		
-		$passiveMessage = new Message();
-		$passiveMessage->compose($item);
-		
-		if ($order->load(Yii::$app->request->post()) && $activeMessage->load(Yii::$app->request->post())) 
+		$order = new Order([
+			'scenario' => Order::SCENARIO_CREATE,
+			'catcher_id' => Yii::$app->user->identity->id,
+			'item_id' => $item->id]);
+		$message = new Message();
+		$message->compose($item);
+		if ($order->load(Yii::$app->request->post()) && $message->load(Yii::$app->request->post())) 
 		{	
 			$isValid = $order->validate();
-			$isValid = $activeMessage->validate() && $isValid;
+			$isValid = $message->validate() && $isValid;
 			
 			if ($isValid)
 			{
 				$order->save();
-				$activeMessage->save();
+				$message->save();
 				Yii::$app->session->setFlash(
                 'success',
                 'Item was successfully swapped'
@@ -67,22 +59,24 @@ class OrdersController extends Controller
                 return $this->redirect(['items/index']);
 			}
 		}
-		if ($passiveMessage->load(Yii::$app->request->post()) && $passiveMessage->validate())
-		{
-			$passiveMessage->save();
-			Yii::$app->session->setFlash(
-	                'success',
-	                'Message to @'.$item->author->username.' was successfully sent'
-        		);
-        	return $this->redirect(['orders/create', 'id' => $id]);
-		}
 		else {
-            return $this->render('create', [
-                'order' => $order,
-                'item' => $item,
-                'activeMessage' => $activeMessage,
-                'passiveMessage' => $passiveMessage
-            ]);
+			if (Yii::$app->request->isAjax)
+			{
+				return $this->renderPartial('create', [
+	                'order' => $order,
+	                'item' => $item,
+	                'message' => $message
+        		]);
+			}
+			else
+			{
+				return $this->render('create', [
+	                'order' => $order,
+	                'item' => $item,
+	                'message' => $message
+        		]);
+			}
+            
 		} 
 	}
 	

@@ -28,4 +28,9 @@ class SwapImage extends \yii\db\ActiveRecord
 			[['item_id'], 'integer']
 			];
 	}
+	
+	public function getItem()
+	{
+		return $this->hasOne(Item::className(), ['id' => 'item_id']);
+	}
 }

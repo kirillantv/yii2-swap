@@ -6,15 +6,16 @@
  * For more information read README and LICENSE file 
  */
  
+/* @var $this yii\web\View */
+/* @var $dialogs array of kirillantv\swap\modules\message\models\Message */
 use yii\helpers\Url;
 use yii\helpers\Html;
 ?>
 
 <?php foreach ($dialogs as $message): ?>
 	<div class="media bg-warning">
-	  <a class="pull-left" href="<?= Url::toRoute(['conversation', 
-	  												'hash' => $message->hash, 
-	  												'item' => $message->item_id, 
+	  <a class="pull-left" href="<?= Url::toRoute(['conversation',
+	  												'item_id' => $message->item_id, 
 	  												'from' => $message->from, 
 	  												'to' => $message->to]); ?>">
 	    <img class="media-object" src="https://cdn.jsdelivr.net/emojione/assets/png/1f609.png?v=2.2.5" alt="...">

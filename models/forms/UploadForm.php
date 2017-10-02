@@ -59,6 +59,32 @@ class UploadForm extends \yii\base\Model
 		$model->save(false);
 	}
 	
+	public function getImageData($format = null)
+	{
+		$images = null;
+		
+		if (isset($this->item_id))
+		{
+			$query = SwapImage::find()->where(['item_id' => $this->item_id]);
+			
+			if ($format == null || $format == 'array')
+			{
+				$images = $query->asArray()->all();	
+			}
+			
+			if ($format == 'object')
+			{
+				$images = $query->all();
+			}
+			
+			if ($format == 'json')
+			{
+				$images = \yii\helpers\Json::encode($query->asArray()->all());
+			}
+		}
+		
+		return $images;
+	}
 	public function getUploadPath()
 	{
 		if ($this->uploadPath == null)
