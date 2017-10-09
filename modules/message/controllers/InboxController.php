@@ -11,9 +11,10 @@ namespace kirillantv\swap\modules\message\controllers;
 use Yii;
 use yii\filters\AccessControl;
 use yii\db\Query;
+use yii\helpers\Json;
 use kirillantv\swap\modules\message\models\Message;
+use kirillantv\swap\modules\message\models\Conversation;
 use kirillantv\swap\models\Item;
-use kirillantv\swap\modules\message\services\Conversation;
 
 class InboxController extends \yii\web\Controller
 {
@@ -25,7 +26,7 @@ class InboxController extends \yii\web\Controller
 				'rules' => [
 					[
 						'allow' => true,
-						'actions' => ['index', 'conversation'],
+						'actions' => ['index', 'conversation', 'new-messages'],
 						'roles' => ['@']
 						]
 					]
@@ -33,43 +34,46 @@ class InboxController extends \yii\web\Controller
 			];		
 	}
 	
+	/**
+	 * Finish him
+	 */
 	public function actionIndex()
 	{
-		$dialogs = Message::find()->inbox()->all();
-		return $this->render('index', ['dialogs' => $dialogs]);
+		$conversations = Conversation::find()->where(['user_one' => Yii::$app->user->id])
+		                ->orWhere(['user_two' => Yii::$app->user->id])
+		                ->all();
+		return $this->render('index', ['conversations' => $conversations]);
 	}
 	
-	public function actionConversation($item_id, $from, $to)
+	public function actionNewMessages($format = null)
 	{
-		$conversation = new Conversation(['item_id' => $item_id, 'participants' => [$from, $to]]);
-		if (!Yii::$app->request->isAjax)
+		if (Yii::$app->request->isAjax)
 		{
-			$message = new Message(['scenario' => Message::SCENARIO_CONVERSATION]);
-			$message->compose(Item::findOne($item_id), $conversation->info->sender->id == Yii::$app->user->identity->id ? $conversation->info->recipient->id : $conversation->info->sender->id);
-			
-			if ($message->load(Yii::$app->request->post()) && $message->validate())
+			if ($format == 'json')
 			{
-				$message->save();
-				Yii::$app->session->setFlash(
-		                'success',
-		                'Message to @'.$info->interlocutor.' was successfully sent'
-	        		);
-	        	return $this->redirect(['conversation', 'item' => $message->item_id, 'from' => $message->from, 'to' => $message->to]);
+				$messages = Message::find()->newMessagesForUser()->groupBy(['item_id', 'from'])->all();
+				$count = Message::find()->newMessagesForUser()->count();
+				return Json::encode(['messages' => $messages, 'count' => $count]);
 			}
 			else
 			{
-				return $this->render('conversation', ['message' => $message, 'conversation' => $conversation]);
+				return $this->renderPartial('new-messages', ['messages' => $messages, 'count' => $count]);
 			}
 		}
 		else
 		{
-			return $this->renderPartial('conversation', ['message' => $message, 'conversation' => $conversation]);
+			return $this->render('new-messages', ['messages' => $messages, 'count' => $count]);
 		}
+		
 	}
 	
-	public function actionCreate($item_id = null, $to = null)
+	public function actionConversation($c_id)
 	{
-		$message = new Message(['scenario' => Message::SCENARIO_CONVERSATION]);
-		
+		$conversation = Conversation::findOne($c_id);
+		if ($conversation)
+		{
+			$message = Yii::$app->runAction('/swap/message/message/create', ['item_id' => $conversation->item_id, 'c_id' => $conversation->id]);
+			return $this->render('conversation', ['conversation' => $conversation, 'message' => $message]);
+		}
 	}
 }

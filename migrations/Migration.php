@@ -18,6 +18,7 @@ class Migration extends \yii\db\Migration
     protected $restrict = 'RESTRICT';
     protected $cascade = 'CASCADE';
     protected $setNull = 'SET NULL';
+    protected $noAction = 'NO ACTION';
     protected $dbType;
     
 

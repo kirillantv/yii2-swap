@@ -169,50 +169,9 @@ class ItemsController extends Controller
     public function actionView($id)
     {
     	$item = Item::findOne($id);
-    	if (Yii::$app->user->identity->id != $item->author_id && !Yii::$app->user->isGuest)
-    	{
-    		$order = new Order(['scenario' => Order::SCENARIO_CREATE]);
-    		$order->catcher_id = Yii::$app->user->identity->id;
-		    $order->item_id = $item->id;
-			$activeMessage = new Message();
-			$activeMessage->compose($item);
-			$passiveMessage = new Message();
-			$passiveMessage->compose($item);
-			
-			if ($order->load(Yii::$app->request->post()) && $activeMessage->load(Yii::$app->request->post()))
-			{
-				$isValid = $order->validate();
-				$isValid = $activeMessage->validate() && $isValid;
-				
-				if ($isValid)
-				{
-					$order->save();
-					$activeMessage->save();
-					Yii::$app->session->setFlash(
-	                'success',
-	                'Item was successfully swapped'
-	        		);
-	                return $this->redirect(['items/index']);
-				}
-			}
-			if ($passiveMessage->load(Yii::$app->request->post()) && $passiveMessage->validate())
-			{
-				$passiveMessage->save();
-				Yii::$app->session->setFlash(
-		                'success',
-		                'Message to @'.$item->author->username.' was successfully sent'
-	        		);
-	        	return $this->redirect(['items/view', 'id' => $id]);
-			}
-    	}
     	if ($item)
     	{
-    		return $this->render('view', [
-                'order' => $order,
-                'item' => $item,
-                'activeMessage' => $activeMessage,
-                'passiveMessage' => $passiveMessage
-    			]);
+    		return $this->render('view', ['item' => $item]);
     	}
     }
     

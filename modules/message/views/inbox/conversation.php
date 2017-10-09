@@ -6,27 +6,38 @@
  * For more information read README and LICENSE file 
  */
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $conversation kirillantv\swap\modules\message\services\Conversation */
+/* @var $message yii\web\View result of rendering /swap/message/message/create controller */
 ?>
-<div class="">
-<div class="panel panel-info">
+<div class="panel panel-default">
 	<div class="panel-heading">
 		<h4>
-			<small>
-				<?= Html::encode('@'.$conversation->interlocutorName.': ') ?>	
-			</small>
-			<?= Html::encode($conversation->info->item->title) ?>
+			<a href="<?= Url::to(['/swap/items/view', 'id' => $conversation->item->id])?>"><?= Html::encode($conversation->item->title) ?></a>
 		</h4>
+		<p><?= Html::encode('with @'.$conversation->interlocutor->username) ?></p>
 	</div>
-	<div class="panel-body">
+	<div class="panel-body" style="max-height: 100vh; overflow:auto">
 		<?php foreach($conversation->messages as $msg): ?>
-			<div class="col-md-12" style="margin-bottom:10px">
+			<div class="col-xs-12">
 				<div class="row">
-					<div class="col-md-<?= $msg->from == Yii::$app->user->identity->id ? 'offset-' : ''?>6">
-						<div class="media bg-warning">
-						<?= $msg->message; ?>
+					<div class="col-xs-12">
+						<div class="row">
+							<h5>
+								<p class="text-info">
+									<?= '@'.$msg->user->username.' ' ?>
+									<small class="text-default">
+										<?= $msg->created_at ?>
+									</small>
+								</p>
+							</h5>
+						</div>
+					</div>
+					<div class="col-xs-12">
+						<div class="row">
+							<?= $msg->message; ?>
 						</div>
 					</div>						
 				</div>
@@ -34,7 +45,6 @@ use yii\helpers\Html;
 		<?php endforeach; ?>
 	</div>
 	<div class="panel-footer">
-		<?= $this->render('_message', ['message' => $message, 'info' => $info]); ?>
+		<?= $message ?>
 	</div>
-</div>	
 </div>

@@ -14,6 +14,7 @@ use yii\filters\AccessControl;
 use kirillantv\swap\models\Item;
 use kirillantv\swap\modules\message\models\Message;
 use yii\helpers\Json;
+use kirillantv\swap\modules\message\models\Conversation;
 
 class MessageController extends Controller
 {
@@ -33,51 +34,58 @@ class MessageController extends Controller
 			];		
 	}
 	
-	public function actionCreate($item_id = null)
+	public function actionCreate($item_id, $c_id = null, $template = false)
 	{
-		if ($item_id != null)
+		$item = Item::findOne($item_id);
+		if (!Item::findOne($item_id))
 		{
-			$item = Item::findOne($item_id);
-			$message = new Message();
-			$message->compose($item);
+			return $this->redirect('error');
+		}		
+		$message = new Message();
+		
+		if ($message->load(Yii::$app->request->post()))
+		{
+			$conversation = Conversation::getConversation($item_id, $c_id);
+			$message->setAttributes(['conversation_id' => $conversation->id]);
+			$result = $message->save();
 			
-			$viewParams = ['message' => $message, 'item' => $item];
-			// For Ajax requests
 			if (Yii::$app->request->isAjax)
 			{
-				if ($message->load(Yii::$app->request->post()) && $message->validate())
-				{
-					if ($message->save())
-					{
-						return true;
-					}
-					else
-					{
-						return false;
-					}
-				}
-				else
-				{
-					return $this->renderPartial('create', $viewParams);
-				}
+				return Json::encode(['result' => $result, 'message' => $message, 'conversation' => $conversation, 'item' => $item]);	
 			}
 			
+			if ($template == false)
+			{
+				return $this->renderPartial('create', ['message' => $message, 'item' => $item]);
+			}
 			else
 			{
-				if ($message->load(Yii::$app->request->post()) && $message->validate())
-				{
-					if ($message->save())
-					{
-						return $this->goBack();
-					}
-				}
-				else
-				{
-					return $this->render('create', $viewParams);
-				}
-				
+				return $this->render('create', ['message' => $message, 'item' => $item]);
+			}
+		}
+		else
+		{
+			if (Yii::$app->request->isAjax || $template == false)
+			{
+				return $this->renderPartial('create', ['message' => $message, 'item' => $item]);
+			}
+			else
+			{
+				return $this->render('create', ['message' => $message, 'item' => $item]);
 			}
 		}
 	}
 	
+	public function actionDelete($id)
+	{
+		$message = Message::findOne($id);
+		if ($message->delete())
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 }

@@ -16,9 +16,22 @@ use yii\behaviors\TimestampBehavior;
 use yii\behaviors\BlameableBehavior;
 use kirillantv\swap\models\Item;
 
+/**
+ * @property int $id ID
+ * @property int $user_id ID of user who creates message
+ * @property string $message Body of message
+ * @property varchar $ip IP of user
+ * @property string $created_at The time of the message
+ * @property int $status Status of the message
+ * @propery int $conversation_id ID of conversation where message was created
+ */
+
 class Message extends \yii\db\ActiveRecord
 {
 	const SCENARIO_CONVERSATION = 'conversation';
+	
+	const STATUS_NEW = 0;
+	const STATUS_READ = 1;
 	/**
      * @inheritdoc
      */
@@ -37,13 +50,13 @@ class Message extends \yii\db\ActiveRecord
     	return [
     		[
     			'class' => BlameableBehavior::classname(),
-    			'createdByAttribute' => 'from',
+    			'createdByAttribute' => 'user_id',
     			'updatedByAttribute' => false
     			],
     		[
     			'class' => AttributeBehavior::classname(),
-    			'attributes' => [ActiveRecord::EVENT_BEFORE_INSERT => 'hash'],
-    			'value' => md5(uniqid(rand(), true)),
+    			'attributes' => [ActiveRecord::EVENT_BEFORE_INSERT => 'ip'],
+    			'value' => Yii::$app->request->userIP,
     			],
     		[
     			'class' => TimestampBehavior::className(),
@@ -59,10 +72,10 @@ class Message extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['to', 'item_id', 'message'], 'required'],
-            [['to', 'item_id'], 'integer'],
+            [['conversation_id', 'message'], 'required'],
+            [['conversation_id', 'status'], 'integer'],
             [['message'], 'string'],
-            [['to'], 'exist', 'targetClass' => Yii::$app->user->identityClass, 'targetAttribute' => ['to' => 'id']]
+            [['status'], 'default', 'value' => self::STATUS_NEW]
         ];
     }
     
@@ -73,39 +86,14 @@ class Message extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getRecipient()
+    public function getUser()
     {
-        return $this->hasOne(Yii::$app->user->identityClass, ['id' => 'to']);
+        return $this->hasOne(Yii::$app->user->identityClass, ['id' => 'user_id']);
     }
     
-    public function getSender()
+    public function getConversation()
     {
-        return $this->hasOne(Yii::$app->user->identityClass, ['id' => 'from']);
-    }
-    
-    public function getItem()
-    {
-    	return $this->hasOne(Item::className(), ['id' => 'item_id']);
-    }
-    
-    public function compose(Item $item = null, $to = null)
-    {
-    	if ($this->scenario == self::SCENARIO_CONVERSATION)
-    	{
-    		$this->to = $to;
-			$this->item_id = $item->id;	
-    	}
-    	if ($this->scenario == self::SCENARIO_DEFAULT)
-    	{
-    		$this->to = $item->author->id;
-			$this->item_id = $item->id;	
-    	}
-		
-    }
-    
-    public function getInterlocutor()
-    {
-    	return $this->sender->id == Yii::$app->user->identity->id ? $this->recipient->username : $this->sender->username;
+    	return $this->hasOne(Conversation::classname(), ['id' => 'conversation_id']);
     }
     
     /**
@@ -115,6 +103,6 @@ class Message extends \yii\db\ActiveRecord
      */
     public function isMe()
     {
-    	return $this->from == Yii::$app->user->identity->id ? true : false;
+    	return $this->user_id == Yii::$app->user->identity->id ? true : false;
     }
 }
