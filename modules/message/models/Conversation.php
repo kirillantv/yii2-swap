@@ -61,23 +61,33 @@ class Conversation extends \yii\db\ActiveRecord
 		];
 	}
 	
-	public static function getConversation($item_id, $c_id = null)
+	public static function getConversation($item_id = null, $c_id = null)
 	{
+		if ($item_id != null)
+		{
+			$item = Item::findOne($item_id);
+		}
+		
+		$conversation = null;
+		
 		if ($c_id != null)
 		{
-			return $conversation = self::findOne($c_id);
+			
+			$conversation = self::find()->where(['id' => $c_id])->with('item', 'messages', 'interlocutor')->one();
 		}
 		else
 		{
-			return $conversation = self::find()
+			$conversation = self::find()->with('item', 'messages', 'interlocutor')
 	                ->where(['user_one' => [Yii::$app->user->id, $item->author->id]])
-	                ->orWhere(['user_two' => [Yii::$app->user->id, $item->author->id]])
+	                ->andWhere(['user_two' => [Yii::$app->user->id, $item->author->id]])
 	                ->andWhere(['item_id' => $item->id])->one();
 		}
 		if (!$conversation)
 		{
-			return $conversation = new self(['item_id' => $item->id]);
+			$conversation = new self(['item_id' => $item->id]);
+			$conversation->save();
 		}
+		return $conversation;
 	}
 	
 	public function getTotalCount()
@@ -96,7 +106,11 @@ class Conversation extends \yii\db\ActiveRecord
 	}
 	public function getMessages()
 	{
-		return $this->hasMany(Message::classname(), ['conversation_id' => 'id'])->with('user');
+		return $this->hasMany(Message::classname(), ['conversation_id' => 'id'])->with([
+			'user' => function($query){
+				return $query->select(['id', 'username']);
+		}
+		]);
 	}
 	
 	public function getItem()

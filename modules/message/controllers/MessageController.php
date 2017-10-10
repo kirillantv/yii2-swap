@@ -34,13 +34,12 @@ class MessageController extends Controller
 			];		
 	}
 	
-	public function actionCreate($item_id, $c_id = null, $template = false)
+	public function actionCreate($item_id = null, $c_id = null, $template = false)
 	{
-		$item = Item::findOne($item_id);
-		if (!Item::findOne($item_id))
+		if ($item_id == null && $c_id == null)
 		{
 			return $this->redirect('error');
-		}		
+		}
 		$message = new Message();
 		
 		if ($message->load(Yii::$app->request->post()))
@@ -51,27 +50,27 @@ class MessageController extends Controller
 			
 			if (Yii::$app->request->isAjax)
 			{
-				return Json::encode(['result' => $result, 'message' => $message, 'conversation' => $conversation, 'item' => $item]);	
+				return Json::encode(['result' => $result, 'message' => $message, 'conversation' => $conversation]);	
 			}
 			
 			if ($template == false)
 			{
-				return $this->renderPartial('create', ['message' => $message, 'item' => $item]);
+				return $this->renderPartial('create', ['message' => $message]);
 			}
 			else
 			{
-				return $this->render('create', ['message' => $message, 'item' => $item]);
+				return $this->render('create', ['message' => $message]);
 			}
 		}
 		else
 		{
 			if (Yii::$app->request->isAjax || $template == false)
 			{
-				return $this->renderPartial('create', ['message' => $message, 'item' => $item]);
+				return $this->renderPartial('create', ['message' => $message]);
 			}
 			else
 			{
-				return $this->render('create', ['message' => $message, 'item' => $item]);
+				return $this->render('create', ['message' => $message]);
 			}
 		}
 	}
