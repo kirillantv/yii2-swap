@@ -1,3 +1,5 @@
+Yii2-Swap is module, that helps your users to swap different things.
+
 # Getting started with Yii2-swap
 
 *** Alpha version v0.8.3-alpha ***
